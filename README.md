@@ -8,8 +8,6 @@ Entwickelt von Leon.H43
 
 - **Ping Slash Command**: Ein einfacher `/ping`-Befehl, der mit der aktuellen Latenz in Millisekunden antwortet.
 
----
-
 ## Weiterentwicklung
 
 - **Neue Funktionen oder Bugs**: Im Issues Tab dieser Repository
