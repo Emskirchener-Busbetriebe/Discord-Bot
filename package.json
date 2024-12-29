@@ -1,0 +1,15 @@
+{
+  "name": "Emskirchener-Busbetriebe-Bot",
+  "version": "1.0.0",
+  "description": "Bot für den Emskirchener Busbetriebe Discord Server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Leon.H43",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.0.0",
+    "dotenv": "^16.0.0"
+  }
+}
