@@ -1,8 +1,15 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
-  data: new SlashCommandBuilder().setName('ping').setDescription('Antwortet mit Pong!'),
+  data: new SlashCommandBuilder()
+      .setName('ping')
+      .setDescription('Antwortet mit einem Ping-Embed!'),
   async execute(interaction) {
-    await interaction.reply('Pong!');
+    const latency = Math.abs(Date.now() - interaction.createdTimestamp);
+    const embed = new EmbedBuilder()
+        .setTitle(`Pong mit ${latency}ms!`)
+        .setColor('Green');
+
+    await interaction.reply({ embeds: [embed] });
   }
 };
