@@ -10,6 +10,10 @@ Entwickelt von Leon.H43
 
 ---
 
+## Weiterentwicklung
+
+- **Neue Funktionen oder Bugs**: Im Issues Tab dieser Repository
+
 ### Installation
 
 1. Klone das Repository:
