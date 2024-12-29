@@ -19,7 +19,7 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
 2. Installiere die benötigten Packete:
    ```bash
    npm install
-3. Erstelle eine .env-Datei im Hauptverzeichnis und füge den Bot-Token und die ClientID ein. (Frage bei Leon für die daten nach)
+3. Erstelle eine .env-Datei im Hauptverzeichnis und füge den Bot-Token und die ClientID ein. (Frage Leon nach den Daten.)
    ```bash
    TOKEN=Token
    CLIENT_ID=
