@@ -1,7 +1,7 @@
 # Emskirchener-Busbetriebe Discord-Bot
 
 Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.  
-[Beitreten zum Server](https://discord.gg/VAeNtnBF)  
+[Link zum Server](https://discord.gg/VAeNtnBF)  
 Entwickelt von Leon.H43
 
 ## Funktionen
