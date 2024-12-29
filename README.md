@@ -2,7 +2,6 @@
 
 Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.  
 [Link zum Server](https://discord.gg/VAeNtnBF)  
-Entwickelt von Leon.H43
 
 ## Funktionen
 
