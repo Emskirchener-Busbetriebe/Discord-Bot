@@ -7,22 +7,18 @@ module.exports = {
         .setDescription('Zeigt ein Zitat an.'),
     async execute(interaction) {
         try {
-            // Hole ein zufälliges Zitat von der ZenQuotes API
             const response = await axios.get('https://zenquotes.io/api/random');
             const quote = response.data[0].q;
             const author = response.data[0].a;
 
-            // Zufällige Farbe generieren
-            const randomColor = Math.floor(Math.random() * 16777215).toString(16); // Zufälliger Hex-Farbcode
+            const randomColor = Math.floor(Math.random() * 16777215).toString(16);
 
-            // Erstelle das Embed
             const embed = new EmbedBuilder()
                 .setTitle('Dein Zitat')
                 .setDescription(`*${quote}*`)
                 .setFooter({ text: `~ ${author}` })
-                .setColor(`#${randomColor}`); // Zufällige Farbe
+                .setColor(`#${randomColor}`);
 
-            // Sende das Embed zurück
             await interaction.reply({ embeds: [embed] });
         } catch (error) {
             console.error(error);
