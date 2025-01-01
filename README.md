@@ -3,7 +3,7 @@
 Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.  
 [Link zum Server](https://discord.gg/VAeNtnBF)  
 
-## Funktionen
+## Commands
 
 - **Ping Slash Command**: Ein einfacher `/ping`-Befehl, der mit der aktuellen Latenz in Millisekunden antwortet.
 ---
@@ -14,6 +14,11 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
 - **Meme Slash Command**:`/meme` Mit diesem Befehl, zeigt der Bot ein zufällig Meme aus einer Meme-API an.
 ---
 - **Uptime Slash Command**: Ein simpler `/uptime`-Befehl, welcher dir die Laufzeit des Discord Bots anzeigt.
+---
+
+## Weitere Funktionen
+
+- **Willkommens Naricht**: Sobald ein neuer Member dem Server Joint wird im Willkommens-Kanal ein Embed gesendet (Wenn sich der Willkommens-Kanal ändert, bitte an Leon.H43/Gamer443 wenden!)
 ---
 
 ## Weiterentwicklung
