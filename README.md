@@ -19,6 +19,9 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
 2. Installiere die benötigten Packete:
    ```bash
    npm install
+```bash
+   npm install axios
+
 3. Erstelle eine .env-Datei im Hauptverzeichnis und füge den Bot-Token und die ClientID ein. (Frage Leon nach den Daten.)
    ```bash
    TOKEN=Token
