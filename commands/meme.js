@@ -18,7 +18,7 @@ module.exports = {
                     url: meme.url,
                 },
                 footer: {
-                    text: 'Meme von meme-api.com',
+                    text: 'Meme aus der meme-api.com',
                 },
             };
 
