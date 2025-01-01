@@ -25,7 +25,7 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
 
 - **Neue Funktionen oder Bugs**: Im Issues Tab dieser Repository
 
-## Installation
+## Installation [Für das Emskirchener-Busbetriebe Team!!!]
 
 1. Klone das Repository:
    ```bash
