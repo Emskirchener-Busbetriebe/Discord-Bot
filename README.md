@@ -7,7 +7,7 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
 
 - **Ping Slash Command**: Ein einfacher `/ping`-Befehl, der mit der aktuellen Latenz in Millisekunden antwortet.
 - **Shutdown Slash Command**: Der `/shutdown`-Befehl, fährt den Bot herunter, dieser Befehl kann nur vom Owner des Bots ausgeführt werden!
-- **Zitat Slash Command**: Mit dem `/quote`-Befehl, zeigt der Bot ein zufällig Zitat aus der [zenquotes.io](zenquotes.io)-API an.
+- **Zitat Slash Command**: Mit dem `/quote`-Befehl, zeigt der Bot ein zufällig Zitat aus der [zenquotes.io](https://zenquotes.io)-API an.
 
 ## Weiterentwicklung
 
