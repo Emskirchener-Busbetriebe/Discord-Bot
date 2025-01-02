@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const axios = require('axios');
 
 module.exports = {
@@ -11,16 +11,12 @@ module.exports = {
             const response = await axios.get('https://meme-api.com/gimme');
             const meme = response.data;
 
-            const embed = {
-                color: 0x00FF00,
-                title: meme.title,
-                image: {
-                    url: meme.url,
-                },
-                footer: {
-                    text: 'Meme aus der meme-api.com',
-                },
-            };
+            const embed = new EmbedBuilder()
+                .setColor(0x00FF00)
+                .setTitle(meme.title)
+                .setImage(meme.url)
+                .setFooter({ text: 'Emskirchener Busbetriebe | Bot' })
+                .setTimestamp();
 
             await interaction.reply({ embeds: [embed] });
         } catch (error) {

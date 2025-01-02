@@ -8,7 +8,9 @@ module.exports = {
     const latency = Math.abs(Date.now() - interaction.createdTimestamp);
     const embed = new EmbedBuilder()
         .setTitle(`Pong mit ${latency}ms!`)
-        .setColor('Green');
+        .setColor('Green')
+        .setFooter({ text: 'Emskirchener Busbetriebe | Bot' })
+        .setTimestamp();
 
     await interaction.reply({ embeds: [embed] });
   }
