@@ -57,10 +57,10 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
    CLIENT_ID=
 
 4. Ersteller die Datenbank File.
-   ``bash
+   ```bash
    betaKeys.db
 
-6. Bot starten:
+5. Bot starten:
    ```bash
    node index.js
 
