@@ -55,7 +55,12 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
    ```bash
    TOKEN=Token
    CLIENT_ID=
-4. Bot starten:
+
+4. Ersteller die Datenbank File.
+   ``bash
+   betaKeys.db
+
+6. Bot starten:
    ```bash
    node index.js
 
