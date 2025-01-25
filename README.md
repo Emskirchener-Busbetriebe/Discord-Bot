@@ -15,6 +15,8 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
 ---
 - **Uptime Slash Command**: Ein simpler `/uptime`-Befehl, welcher dir die Laufzeit des Discord Bots anzeigt.
 ---
+- **Clear Slash Command**: `/clear`, löscht eine bestimmte Anzahl von Narichten in einem Kanal.
+---
 
 ## Weitere Funktionen
 
