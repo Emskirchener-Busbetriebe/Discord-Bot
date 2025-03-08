@@ -11,7 +11,7 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
 ---
 - **Zitat Slash Command**: Mit dem `/quote`-Befehl, zeigt der Bot ein zufällig Zitat aus der [zenquotes.io](https://zenquotes.io)-API an.
 ---
-- **Meme Slash Command**:`/meme` Mit diesem Befehl, zeigt der Bot ein zufällig Meme aus einer Meme-API an.
+- **Meme Slash Command**:`/meme` Mit diesem Befehl, zeigt der Bot ein zufällig Meme aus der [Meme-API](https://github.com/D3vd/Meme_Api) an.
 ---
 - **Uptime Slash Command**: Ein simpler `/uptime`-Befehl, welcher dir die Laufzeit des Discord Bots anzeigt.
 ---
@@ -20,7 +20,7 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
 
 ## Weitere Funktionen
 
-- **Willkommens Naricht**: Sobald ein neuer Member dem Server Joint wird im Willkommens-Kanal ein Embed gesendet (Wenn sich der Willkommens-Kanal ändert, bitte an Leon.H43/Gamer443 wenden!)
+- **Willkommens Naricht**: Sobald ein neuer Member dem Server joint wird im Willkommens-Kanal ein Embed gesendet 
 ---
   - **Beta System**: Das Beta-System ermöglicht es, ausgewählte Benutzer als Beta-Tester hinzuzufügen und zu verwalten. Die folgenden Slash-Commands stehen zur Verfügung:
     <br><br>
