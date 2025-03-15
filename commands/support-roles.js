@@ -67,7 +67,13 @@ module.exports = {
                 const embed = new EmbedBuilder()
                     .setColor(Colors.Green)
                     .setTitle('Support-Rolle hinzugefügt')
-                    .setDescription(`Die Rolle ➦ **${role.name}** wurde erfolgreich als Support-Rolle hinzugefügt. ${role.toString()}`)
+                    .setDescription(`
+                        **Rolle:** ${role.name}
+                        **Aktion:** Erfolgreich hinzugefügt.
+                    `)
+                    .addFields(
+                        { name: 'Rolle:', value: role.toString(), inline: true }
+                    )
                     .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
                     .setTimestamp(timestamp);
                 await interaction.reply({ embeds: [embed] });
@@ -94,11 +100,14 @@ module.exports = {
                 await interaction.reply({ embeds: [embed] });
                 return;
             }
-            const roles = roleIds.map(id => `<@&${id}>`).join(', ');
+            const roles = roleIds.map(id => `<@&${id}>`).join('\n');
             const embed = new EmbedBuilder()
                 .setColor(Colors.Blue)
                 .setTitle('Support-Rollen')
-                .setDescription(`Die folgenden Rollen sind als Support-Rollen festgelegt:\n${roles}`)
+                .setDescription(`
+                    **Folgende Rollen sind als Support-Rollen festgelegt:**
+                    ${roles}
+                `)
                 .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
                 .setTimestamp(timestamp);
             await interaction.reply({ embeds: [embed] });
@@ -123,7 +132,13 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setColor(Colors.Red)
                 .setTitle('Support-Rolle entfernt')
-                .setDescription(`Die Rolle ➦ **${role.name}** wurde als Support-Rolle entfernt. ${role.toString()}`)
+                .setDescription(`
+                    **Rolle:** ${role.name}
+                    **Aktion:** Erfolgreich entfernt.
+                `)
+                .addFields(
+                    { name: 'Rolle:', value: role.toString(), inline: true }
+                )
                 .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
                 .setTimestamp(timestamp);
             await interaction.reply({ embeds: [embed] });
