@@ -15,7 +15,7 @@ module.exports = {
                 .setColor(0x00FF00)
                 .setTitle(meme.title)
                 .setImage(meme.url)
-                .setFooter({ text: 'Emskirchener Busbetriebe | Bot' })
+                .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
                 .setTimestamp();
 
             await interaction.reply({ embeds: [embed] });

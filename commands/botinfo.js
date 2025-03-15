@@ -13,7 +13,7 @@ module.exports = {
                 { name: '🔢 Version', value: '**Version:** Alpha 3.0 🔥' },
             )
             .setColor('#00ff00')
-            .setFooter({ text: 'Emskirchener Busbetriebe | Bot' })
+            .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });

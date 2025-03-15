@@ -4,10 +4,10 @@ const { Client, Collection, GatewayIntentBits } = require('discord.js');
 require('dotenv').config();
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers,
-  ],
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+    ],
 });
 
 client.commands = new Collection();
@@ -17,9 +17,22 @@ const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
-  const filePath = path.join(commandsPath, file);
-  const command = require(filePath);
-  client.commands.set(command.data.name, command);
+    const filePath = path.join(commandsPath, file);
+    const commandModule = require(filePath);
+
+    if (Array.isArray(commandModule)) {
+        for (const command of commandModule) {
+            if (command.data) {
+                client.commands.set(command.data.name, command);
+            } else {
+                console.warn(`Fehlende 'data'-Eigenschaft in ${file}`);
+            }
+        }
+    } else if (commandModule.data) {
+        client.commands.set(commandModule.data.name, commandModule);
+    } else {
+        console.warn(`Fehlende 'data'-Eigenschaft in ${file}`);
+    }
 }
 
 // Events laden
@@ -27,32 +40,32 @@ const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
 for (const file of eventFiles) {
-  const filePath = path.join(eventsPath, file);
-  const event = require(filePath);
+    const filePath = path.join(eventsPath, file);
+    const event = require(filePath);
 
-  if (event.once) {
-    client.once(event.name, (...args) => event.execute(...args));
-  } else {
-    client.on(event.name, (...args) => event.execute(...args));
-  }
+    if (event.once) {
+        client.once(event.name, (...args) => event.execute(...args));
+    } else {
+        client.on(event.name, (...args) => event.execute(...args));
+    }
 }
 
 client.once('ready', () => {
-  console.log(`Eingeloggt als ${client.user.tag}`);
+    console.log(`Eingeloggt als ${client.user.tag}`);
 });
 
 client.on('interactionCreate', async interaction => {
-  if (!interaction.isCommand()) return;
+    if (!interaction.isCommand()) return;
 
-  const command = client.commands.get(interaction.commandName);
-  if (!command) return;
+    const command = client.commands.get(interaction.commandName);
+    if (!command) return;
 
-  try {
-    await command.execute(interaction);
-  } catch (error) {
-    console.error(error);
-    await interaction.reply({ content: 'Ein Fehler ist aufgetreten!', ephemeral: true });
-  }
+    try {
+        await command.execute(interaction);
+    } catch (error) {
+        console.error(error);
+        await interaction.reply({ content: 'Ein Fehler ist aufgetreten!', ephemeral: true });
+    }
 });
 
 client.login(process.env.TOKEN);

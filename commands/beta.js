@@ -51,7 +51,7 @@ module.exports = {
                     .setColor('#FF0000')
                     .setTitle('Keine Berechtigung')
                     .setDescription('Dieser Befehl kann nur von Admins auf dem Emskirchener Busbetriebe Discord ausgeführt werden.')
-                    .setFooter({ text: 'Emskirchener Busbetriebe | Bot' })
+                    .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
                     .setTimestamp();
                 await interaction.reply({ embeds: [embed], ephemeral: true });
                 return;
@@ -67,7 +67,7 @@ module.exports = {
                     .setColor('#FF0000')
                     .setTitle('Beta Limit erreicht')
                     .setDescription('Die Beta ist bereits voll.')
-                    .setFooter({ text: 'Emskirchener Busbetriebe | Bot' })
+                    .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
                     .setTimestamp();
                 await interaction.reply({ embeds: [embed] });
                 return;
@@ -79,7 +79,7 @@ module.exports = {
                     .setColor('#FFFF00')
                     .setTitle('Bereits Beta-Tester')
                     .setDescription(`${user.tag} ist bereits ein Beta-Tester.`)
-                    .setFooter({ text: 'Emskirchener Busbetriebe | Bot' })
+                    .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
                     .setTimestamp();
                 await interaction.reply({ embeds: [embed] });
                 return;
@@ -94,7 +94,7 @@ module.exports = {
                     .setColor('#FFA500')
                     .setTitle('Fehler beim Senden der DM')
                     .setDescription(`${user.tag} wurde hinzugefügt, aber die DM konnte nicht zugestellt werden.`)
-                    .setFooter({ text: 'Emskirchener Busbetriebe | Bot' })
+                    .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
                     .setTimestamp();
                 await interaction.reply({ embeds: [embed] });
                 return;
@@ -103,7 +103,7 @@ module.exports = {
                 .setColor('#00FF00')
                 .setTitle('Beta-Tester hinzugefügt')
                 .setDescription(`${user.tag} wurde als Beta-Tester hinzugefügt.`)
-                .setFooter({ text: 'Emskirchener Busbetriebe | Bot' })
+                .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
                 .setTimestamp();
             await interaction.reply({ embeds: [embed] });
         }
@@ -114,7 +114,7 @@ module.exports = {
                 .setColor('#FF0000')
                 .setTitle('Beta-Tester entfernt')
                 .setDescription(`${user.tag} wurde als Beta-Tester entfernt.`)
-                .setFooter({ text: 'Emskirchener Busbetriebe | Bot' })
+                .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
                 .setTimestamp();
             await interaction.reply({ embeds: [embed] });
         }
@@ -125,7 +125,7 @@ module.exports = {
                 .setColor('#0000FF')
                 .setTitle('Beta-Limit gesetzt')
                 .setDescription(`Das Beta-Limit wurde auf ${limit} gesetzt.`)
-                .setFooter({ text: 'Emskirchener Busbetriebe | Bot' })
+                .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
                 .setTimestamp();
             await interaction.reply({ embeds: [embed] });
         }
@@ -137,7 +137,7 @@ module.exports = {
                     .setColor('#808080')
                     .setTitle('Keine Beta-Tester')
                     .setDescription('Es gibt derzeit keine Beta-Tester.')
-                    .setFooter({ text: 'Emskirchener Busbetriebe | Bot' })
+                    .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
                     .setTimestamp();
                 await interaction.reply({ embeds: [embed] });
                 return;
@@ -148,7 +148,7 @@ module.exports = {
                 .setColor('#00FF00')
                 .setTitle('Aktuelle Beta-Tester')
                 .setDescription(testerList)
-                .setFooter({ text: 'Emskirchener Busbetriebe | Bot' })
+                .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
                 .setTimestamp();
 
             await interaction.reply({ embeds: [embed] });
