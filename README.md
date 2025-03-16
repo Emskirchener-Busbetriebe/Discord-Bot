@@ -22,7 +22,18 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
 
 - **Willkommens Naricht**: Sobald ein neuer Member dem Server joint wird im Willkommens-Kanal ein Embed gesendet 
 ---
-- **Shift System**: Erkärung Bald
+- Das **Shift-System** des Discord-Bots enthält einige Befehle, dazu zählen:
+
+  `/shift add`: Mit diesem Befehl legt ein Admin Datum, Uhrzeit sowie die maximale Teilnehmeranzahl für eine Schicht fest. Der Bot antwortet mit einem Embed, das für alle zugänglich ist und die Informationen auflistet.
+
+  `/shift delete`: Damit können erstellte Schichten wieder gelöscht werden. Dazu benötigt man das Datum sowie die Uhrzeit der Schicht.
+
+  `/shift list`: Listet alle Schichten auf, die im System vorhanden sind, inklusive der Teilnehmer. Schichten werden 2 Stunden nach Beginn der jeweiligen Schicht automatisch gelöscht.
+
+  `/shift join`: Damit kann ein Mitglied einer Schicht beitreten. Dazu benötigt es das Datum sowie die Uhrzeit der Schicht. Zusätzlich wird der Benutzer nach dem Bus und der Linie gefragt, die er fahren möchte. Diese werden automatisch vorgeschlagen.
+
+   `/shift leave`: Der User kann damit eine Schicht wieder verlassen. Dazu benötigt er lediglich das Datum sowie die Uhrzeit der jeweiligen Schicht.
+  
 ---
 ## Weiterentwicklung
 - **Neue Funktionen oder Bugs**: Im Issues Tab dieser Repository
@@ -36,8 +47,6 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
    ```bash
    npm install
    npm install axios
-   npm install sqlite3
-   npm install sqlite
 
 3. Erstelle eine .env-Datei im Hauptverzeichnis und füge den Bot-Token und die ClientID ein. (Frage Leon nach den Daten.)
    ```bash
