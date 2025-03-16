@@ -36,8 +36,6 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
    ```bash
    npm install
    npm install axios
-   npm install sqlite3
-   npm install sqlite
 
 3. Erstelle eine .env-Datei im Hauptverzeichnis und füge den Bot-Token und die ClientID ein. (Frage Leon nach den Daten.)
    ```bash
