@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, ActivityType } = require('discord.js');
 require('dotenv').config();
 
 const client = new Client({
@@ -11,6 +11,49 @@ const client = new Client({
 });
 
 client.commands = new Collection();
+
+const activityFilePath = path.join(__dirname, 'activityConfig.json');
+
+function loadActivity() {
+    if (!fs.existsSync(activityFilePath)) {
+        const defaultActivity = {
+            type: 'Playing',
+            activity: '/help | Emskirchener Busbetriebe Bot',
+            duration: null
+        };
+        fs.writeFileSync(activityFilePath, JSON.stringify(defaultActivity, null, 2));
+        return defaultActivity;
+    }
+    const data = fs.readFileSync(activityFilePath, 'utf8');
+    return JSON.parse(data);
+}
+
+function saveActivity(type, activity, duration) {
+    const activityData = { type, activity, duration };
+    fs.writeFileSync(activityFilePath, JSON.stringify(activityData, null, 2));
+}
+
+function restoreActivity(client) {
+    const activityData = loadActivity();
+    const activityTypeMap = {
+        'Listening': ActivityType.Listening,
+        'Watching': ActivityType.Watching,
+        'Playing': ActivityType.Playing,
+        'Streaming': ActivityType.Streaming,
+        'Competing': ActivityType.Competing
+    };
+
+    client.user.setActivity(activityData.activity, { type: activityTypeMap[activityData.type] });
+
+    if (activityData.duration) {
+        setTimeout(() => {
+            client.user.setActivity('/help | Emskirchener Busbetriebe Bot', { type: ActivityType.Playing });
+            saveActivity('Playing', '/help | Emskirchener Busbetriebe Bot', null);
+        }, activityData.duration * 60000);
+    }
+
+    console.log('Aktivität erfolgreich wiederhergestellt:', activityData);
+}
 
 // Commands laden
 const commandsPath = path.join(__dirname, 'commands');
@@ -51,6 +94,8 @@ for (const file of eventFiles) {
 }
 
 client.once('ready', () => {
+    restoreActivity(client);
+
     const shiftCommand = require('./commands/shift');
     if (shiftCommand.init) {
         shiftCommand.init(client);
