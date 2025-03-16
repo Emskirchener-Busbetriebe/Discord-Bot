@@ -4,6 +4,9 @@ const { join } = require('path');
 const { setTimeout } = require('timers/promises');
 
 const shiftsPath = join(__dirname, 'shifts.json');
+const MAIN_GUILD = "1104669016565489675";
+const NOTIFICATION_USER = "923585143912955994";
+const LOG_CHANNEL = "1350865603799420999";
 
 async function readShifts() {
     try {
@@ -45,7 +48,6 @@ async function scheduleShiftStart(client, shift, guildId) {
                 const channel = await client.channels.fetch(currentShift.channelId).catch(console.error);
                 if (!channel) return;
 
-                // Benachrichtigung im Channel
                 const participants = currentShift.participants.length > 0
                     ? currentShift.participants.map(p => `<@${p.userId}>`).join('\n')
                     : 'Keine Teilnehmer';
@@ -64,7 +66,6 @@ async function scheduleShiftStart(client, shift, guildId) {
 
                 await channel.send({ embeds: [embed] });
 
-                // Persönliche Nachrichten
                 for (const participant of currentShift.participants) {
                     try {
                         const user = await client.users.fetch(participant.userId);
@@ -77,7 +78,6 @@ async function scheduleShiftStart(client, shift, guildId) {
                     }
                 }
 
-                // Lösche Schicht nach 2 Stunden
                 setTimeout(7200000).then(async () => {
                     const shiftsData = await readShifts();
                     const guildShifts = shiftsData[guildId]?.shifts || [];
@@ -210,12 +210,29 @@ module.exports = {
                     const time = interaction.options.getString('time');
                     const max = interaction.options.getInteger('max');
 
-                    // Validierung
                     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
                         return interaction.reply({ content: 'Ungültiges Datumsformat! Verwende YYYY-MM-DD.', ephemeral: true });
                     }
+                    const dateObj = new Date(date);
+                    if (isNaN(dateObj.getTime())) {
+                        return interaction.reply({ content: 'Ungültiges Datum!', ephemeral: true });
+                    }
+
                     if (!/^\d{2}:\d{2}$/.test(time)) {
                         return interaction.reply({ content: 'Ungültiges Zeitformat! Verwende HH:MM.', ephemeral: true });
+                    }
+                    const [hours, minutes] = time.split(':').map(Number);
+                    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+                        return interaction.reply({ content: 'Ungültige Uhrzeit!', ephemeral: true });
+                    }
+
+                    if (max <= 0) {
+                        return interaction.reply({ content: 'Ungültige Teilnehmer Anzahl!', ephemeral: true });
+                    }
+
+                    const startTime = new Date(`${date}T${time}:00`);
+                    if (startTime <= new Date()) {
+                        return interaction.reply({ content: 'Die Schicht muss in der Zukunft liegen!', ephemeral: true });
                     }
 
                     if (guildShifts.some(s => s.date === date && s.time === time)) {
@@ -236,14 +253,31 @@ module.exports = {
 
                     scheduleShiftStart(interaction.client, newShift, guildId);
 
-                    const startTimestamp = Math.floor(new Date(`${date}T${time}:00`).getTime() / 1000);
+                    const startTimestamp = Math.floor(startTime.getTime() / 1000);
                     const adEmbed = new EmbedBuilder()
                         .setTitle('Neue Schicht verfügbar')
+                        .setDescription('Nutze `/shift join`, um dieser Schicht beizutreten!')
                         .addFields(
-                            { name: 'Datum', value: date, inline: false },
-                            { name: 'Uhrzeit', value: time, inline: false },
-                            { name: 'Maxmimale Teilnehmer', value: `${max} Personen`, inline: false },
-                            { name: 'Startzeit', value: `<t:${startTimestamp}:F>`, inline: false }
+                            {
+                                name: 'Datum',
+                                value: date,
+                                inline: true
+                            },
+                            {
+                                name: 'Uhrzeit',
+                                value: time,
+                                inline: true
+                            },
+                            {
+                                name: 'Maximale Teilnehmer',
+                                value: `${max} Personen`,
+                                inline: false
+                            },
+                            {
+                                name: 'Startzeit',
+                                value: `<t:${startTimestamp}:F>`,
+                                inline: false
+                            }
                         )
                         .setColor(0x00FF00)
                         .setFooter({
@@ -288,6 +322,51 @@ module.exports = {
 
                     shift.participants.push({ userId, bus, line });
                     await writeShifts({ ...shiftsData, [guildId]: { shifts: guildShifts } });
+
+                    if (interaction.guildId === MAIN_GUILD) {
+                        try {
+                            // DM to Alex
+                            const targetUser = await interaction.client.users.fetch(NOTIFICATION_USER);
+                            const participant = interaction.member;
+
+                            const dmEmbed = new EmbedBuilder()
+                                .setTitle('Neue Schichtanmeldung')
+                                .setDescription(`${participant} hat sich für eine Schicht angemeldet`)
+                                .addFields(
+                                    { name: 'Datum', value: date, inline: true },
+                                    { name: 'Uhrzeit', value: time, inline: true },
+                                    { name: 'Bus', value: bus, inline: true },
+                                    { name: 'Linie', value: line, inline: true }
+                                )
+                                .setColor(0x00FF00)
+                                .setTimestamp();
+
+                            await targetUser.send({ embeds: [dmEmbed] });
+
+                            // Channel-Log
+                            const logChannel = await interaction.client.channels.fetch(LOG_CHANNEL);
+
+                            const channelEmbed = new EmbedBuilder()
+                                .setTitle('Neue Schichtanmeldung')
+                                .setDescription(`<@${userId}> hat sich angemeldet`)
+                                .addFields(
+                                    { name: 'Datum', value: date, inline: true },
+                                    { name: 'Uhrzeit', value: time, inline: true },
+                                    { name: 'Bus', value: bus, inline: true },
+                                    { name: 'Linie', value: line, inline: true }
+                                )
+                                .setColor(0x00FF00)
+                                .setFooter({
+                                    text: interaction.guild.name,
+                                    iconURL: interaction.guild.iconURL()
+                                })
+                                .setTimestamp();
+
+                            await logChannel.send({ embeds: [channelEmbed] });
+                        } catch (error) {
+                            console.error('Benachrichtigungsfehler:', error);
+                        }
+                    }
 
                     return interaction.reply({
                         content: `Du bist der Schicht am ${date} um ${time} erfolgreich beigetreten!\n**Bus:** ${bus}\n**Linie:** ${line}`,
@@ -377,8 +456,55 @@ module.exports = {
                         return interaction.reply({ content: 'Du bist nicht in dieser Schicht!', ephemeral: true });
                     }
 
+                    const participantData = shift.participants[participantIndex];
+
                     shift.participants.splice(participantIndex, 1);
                     await writeShifts({ ...shiftsData, [guildId]: { shifts: guildShifts } });
+
+                    if (interaction.guildId === MAIN_GUILD) {
+                        try {
+                            // DM to Alex
+                            const targetUser = await interaction.client.users.fetch(NOTIFICATION_USER);
+                            const participant = interaction.member;
+
+                            const dmEmbed = new EmbedBuilder()
+                                .setTitle('Schicht verlassen')
+                                .setDescription(`${participant} hat eine Schicht verlassen`)
+                                .addFields(
+                                    { name: 'Datum', value: date, inline: true },
+                                    { name: 'Uhrzeit', value: time, inline: true },
+                                    { name: 'Bus', value: participantData.bus, inline: true },
+                                    { name: 'Linie', value: participantData.line, inline: true }
+                                )
+                                .setColor(0xFF0000)
+                                .setTimestamp();
+
+                            await targetUser.send({ embeds: [dmEmbed] });
+
+                            // Channel-Log
+                            const logChannel = await interaction.client.channels.fetch(LOG_CHANNEL);
+
+                            const channelEmbed = new EmbedBuilder()
+                                .setTitle('Schicht verlassen')
+                                .setDescription(`<@${userId}> hat die Schicht verlassen`)
+                                .addFields(
+                                    { name: 'Datum', value: date, inline: true },
+                                    { name: 'Uhrzeit', value: time, inline: true },
+                                    { name: 'Bus', value: participantData.bus, inline: true },
+                                    { name: 'Linie', value: participantData.line, inline: true }
+                                )
+                                .setColor(0xFF0000)
+                                .setFooter({
+                                    text: interaction.guild.name,
+                                    iconURL: interaction.guild.iconURL()
+                                })
+                                .setTimestamp();
+
+                            await logChannel.send({ embeds: [channelEmbed] });
+                        } catch (error) {
+                            console.error('Benachrichtigungsfehler beim Verlassen:', error);
+                        }
+                    }
 
                     return interaction.reply({
                         content: `Du hast die Schicht am ${date} um ${time} verlassen!`,
