@@ -2,13 +2,10 @@ const { SlashCommandBuilder, EmbedBuilder, ActivityType } = require('discord.js'
 const fs = require('fs');
 const path = require('path');
 
-// Pfad zur JSON-Datei
 const activityFilePath = path.join(__dirname, 'activityConfig.json');
 
-// Funktion zum Laden der Aktivität aus der JSON-Datei
 function loadActivity() {
     if (!fs.existsSync(activityFilePath)) {
-        // Erstelle eine Standardkonfiguration, falls die Datei nicht existiert
         const defaultActivity = {
             type: 'Playing',
             activity: '/help | Emskirchener Busbetriebe Bot',
@@ -21,7 +18,6 @@ function loadActivity() {
     return JSON.parse(data);
 }
 
-// Funktion zum Speichern der Aktivität in der JSON-Datei
 function saveActivity(type, activity, duration) {
     const activityData = { type, activity, duration };
     fs.writeFileSync(activityFilePath, JSON.stringify(activityData, null, 2));
@@ -67,6 +63,10 @@ module.exports = {
                 .setDescription('Löscht die aktuelle Aktivität und setzt die Standardaktivität zurück.')
         ),
     async execute(interaction) {
+        if (!interaction.guild) {
+            return interaction.reply({ content: 'Dieser Befehl kann nur in einem Server verwendet werden.', ephemeral: true });
+        }
+
         const { options } = interaction;
         const subcommand = options.getSubcommand();
         const client = interaction.client;
@@ -84,10 +84,8 @@ module.exports = {
                 'Competing': ActivityType.Competing
             };
 
-            // Setze die Aktivität
             client.user.setActivity(activity, { type: activityTypeMap[type] });
 
-            // Speichere die Aktivität in der JSON-Datei
             saveActivity(type, activity, duration);
 
             if (duration) {
@@ -101,11 +99,11 @@ module.exports = {
                 .setTitle('Aktivität gesetzt')
                 .setDescription(`Die Aktivität wurde auf **${type} ${activity}** gesetzt.${duration ? ` Sie wird nach **${duration} Minuten** zurückgesetzt.` : ''}`)
                 .setColor('#00ff00')
+                .setFooter({ text: 'Emskirchener Busbetriebe | Bot', iconURL: client.user.displayAvatarURL() }) // Dein Footer
                 .setTimestamp();
 
             await interaction.reply({ embeds: [embed], ephemeral: true });
         } else if (subcommand === 'delete') {
-            // Setze die Standardaktivität zurück
             client.user.setActivity('/help | Emskirchener Busbetriebe Bot', { type: ActivityType.Playing });
             saveActivity('Playing', '/help | Emskirchener Busbetriebe Bot', null);
 
@@ -113,12 +111,13 @@ module.exports = {
                 .setTitle('Aktivität gelöscht')
                 .setDescription('Die Aktivität wurde zurückgesetzt.')
                 .setColor('#00ff00')
+                .setFooter({ text: 'Emskirchener Busbetriebe | Bot', iconURL: client.user.displayAvatarURL() }) // Dein Footer
                 .setTimestamp();
 
             await interaction.reply({ embeds: [embed], ephemeral: true });
         }
     },
-    // Funktion zum Wiederherstellen der Aktivität beim Start des Bots
+
     async restoreActivity(client) {
         const activityData = loadActivity();
         const activityTypeMap = {

@@ -31,7 +31,7 @@ module.exports = {
             .setTitle('Nachrichten gelöscht')
             .setDescription(`${deletedMessages} Nachrichten wurden erfolgreich gelöscht.`)
             .setColor('Green')
-            .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
+            .setFooter({ text: `Emskirchener Busbetriebe | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed], ephemeral: true });

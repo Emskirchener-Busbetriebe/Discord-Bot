@@ -10,13 +10,12 @@ module.exports = {
         try {
             const response = await axios.get('https://meme-api.com/gimme');
             const meme = response.data;
-            const serverName = interaction.guild.name;
 
             const embed = new EmbedBuilder()
                 .setColor(0x00FF00)
                 .setTitle(meme.title)
                 .setImage(meme.url)
-                .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
+                .setFooter({ text: `Emskirchener Busbetriebe | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
                 .setTimestamp();
 
             await interaction.reply({ embeds: [embed] });

@@ -52,7 +52,7 @@ function restoreActivity(client) {
         }, activityData.duration * 60000);
     }
 
-    console.log('Aktivität erfolgreich wiederhergestellt:', activityData);
+    console.log('Aktivität erfolgreich erstellt:', activityData);
 }
 
 // Commands laden

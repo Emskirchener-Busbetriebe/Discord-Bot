@@ -5,7 +5,6 @@ module.exports = {
         .setName('botinfo')
         .setDescription('Zeigt Informationen über den Bot an.'),
     async execute(interaction){
-        const serverName = interaction.guild.name;
         const embed = new EmbedBuilder()
             .setTitle('🤖 Bot Informationen 🤖')
             .setDescription('Hier sind aktuelle Informationen zu dem Emskirchener Busbetriebe Discord Bot.')
@@ -14,7 +13,7 @@ module.exports = {
                 { name: '🔢 Version', value: '**Version:** Beta 1.0 🔥' },
             )
             .setColor('#00ff00')
-            .setFooter({ text: `${serverName} | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
+            .setFooter({ text: `Emskirchener Busbetriebe | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });
