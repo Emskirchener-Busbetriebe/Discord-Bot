@@ -9,9 +9,9 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
 ---
 - **Shutdown Slash Command**: Der `/shutdown`-Befehl, fährt den Bot herunter, dieser Befehl kann nur vom Owner des Bots ausgeführt werden!
 ---
-- **Zitat Slash Command**: Mit dem `/quote`-Befehl, zeigt der Bot ein zufällig Zitat mithilfee der [zenquotes.io](https://zenquotes.io)-API an.
+- **Zitat Slash Command**: Mit dem `/quote`-Befehl, zeigt der Bot ein zufällig Zitat mithilfe der [zenquotes.io](https://zenquotes.io)-API an.
 ---
-- **Meme Slash Command**:`/meme` Mit diesem Befehl, zeigt der Bot ein zufällig Meme aus der [Meme-API](https://github.com/D3vd/Meme_Api) an.
+- **Meme Slash Command**:`/meme` Mit diesem Befehl, zeigt der Bot ein zufällig Meme aus mithilfe [Meme-API](https://github.com/D3vd/Meme_Api) an.
 ---
 - **Uptime Slash Command**: Ein simpler `/uptime`-Befehl, welcher dir die Laufzeit des Discord Bots anzeigt.
 ---
