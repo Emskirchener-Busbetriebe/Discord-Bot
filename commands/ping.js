@@ -5,6 +5,7 @@ module.exports = {
       .setName('ping')
       .setDescription('Antwortet mit einem Ping-Embed!'),
   async execute(interaction) {
+    const serverName = interaction.guild.name;
     const latency = Math.abs(Date.now() - interaction.createdTimestamp);
     const embed = new EmbedBuilder()
         .setTitle(`Pong mit ${latency}ms!`)

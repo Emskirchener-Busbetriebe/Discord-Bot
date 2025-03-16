@@ -5,6 +5,7 @@ module.exports = {
         .setName('botinfo')
         .setDescription('Zeigt Informationen über den Bot an.'),
     async execute(interaction){
+        const serverName = interaction.guild.name;
         const embed = new EmbedBuilder()
             .setTitle('🤖 Bot Informationen 🤖')
             .setDescription('Hier sind aktuelle Informationen zu dem Emskirchener Busbetriebe Discord Bot.')

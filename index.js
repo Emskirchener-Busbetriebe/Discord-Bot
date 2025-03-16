@@ -51,6 +51,13 @@ for (const file of eventFiles) {
 }
 
 client.once('ready', () => {
+    const shiftCommand = require('./commands/shift');
+    if (shiftCommand.init) {
+        shiftCommand.init(client);
+    } else {
+        console.error('Shift-Command hat keine init-Funktion');
+    }
+
     console.log(`Eingeloggt als ${client.user.tag}`);
 });
 
