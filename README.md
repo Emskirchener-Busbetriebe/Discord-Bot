@@ -1,7 +1,9 @@
-# Emskirchener-Busbetriebe Discord-Bot
+# Emskirchener-Busbetriebe Discord-Bot | Beta 1.0
 
 Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.  
 [Link zum Server](https://discord.gg/VAeNtnBF)  
+
+We are in Beta 1.0!!!
 
 ## Commands
 
@@ -16,6 +18,10 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
 - **Uptime Slash Command**: Ein simpler `/uptime`-Befehl, welcher dir die Laufzeit des Discord Bots anzeigt.
 ---
 - **Clear Slash Command**: `/clear`, löscht eine bestimmte Anzahl von Narichten in einem Kanal.
+---
+- **Activity set Slash Command**: `/activity set`, Setz eine bestimmte Aktivität, auf Wunsch mit Zeitspanne, nach ablauf der Zeitspanne wird die Aktivität, aus der JSON geladen.
+---
+- **Activty delete Slash Command**: `/activty delete`, löscht den aktuellen Status des Bot´s und lädt den Standart Status aus der JSON.
 ---
 
 ## Weitere Funktionen
