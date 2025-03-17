@@ -331,6 +331,25 @@ module.exports = {
                         return interaction.reply({ content: 'Diese Schicht ist bereits voll!', ephemeral: true });
                     }
 
+                    if (role === 'Supervisor') {
+                        // Rolle 1292478179495379017
+                        const member = interaction.member;
+                        if (!member.roles.cache.has('1292478179495379017')) {
+                            return interaction.reply({
+                                content: 'Du bist kein Supervisor! Fehlende Berechtigung.',
+                                ephemeral: true
+                            });
+                        }
+
+                        const supervisorCount = shift.participants.filter(p => p.role === 'Supervisor').length;
+                        if (supervisorCount >= 3) {
+                            return interaction.reply({
+                                content: 'Es können maximal 3 Supervisor pro Schicht teilnehmen!',
+                                ephemeral: true
+                            });
+                        }
+                    }
+
                     shift.participants.push({ userId, bus, line, role });
                     await writeShifts({ ...shiftsData, [guildId]: { shifts: guildShifts } });
 
