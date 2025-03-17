@@ -164,6 +164,16 @@ module.exports = {
                             { name: '61 (ZOB Emskirchen ↔ Wulkersdorfer Straße)', value: '61' },
                             { name: '64 (Emskirchen Festplatz ↔ Wulkersdorfer Straße)', value: '64' }
                         ))
+                .addStringOption(option =>
+                    option.setName('role')
+                        .setDescription('Wähle deine Rolle')
+                        .setRequired(true)
+                        .addChoices(
+                            { name: 'Supervisor', value: 'Supervisor' },
+                            { name: 'Developer', value: 'Developer' },
+                            { name: 'Busfahrer', value: 'Busfahrer' },
+                            { name: 'Fahrgast', value: 'Fahrgast' }
+                        ))
         )
         .addSubcommand(subcommand =>
             subcommand
@@ -304,6 +314,7 @@ module.exports = {
 
                     const bus = interaction.options.getString('bus');
                     const line = interaction.options.getString('line');
+                    const role = interaction.options.getString('role');
                     const userId = interaction.user.id;
 
                     const shift = guildShifts.find(s => s.date === date && s.time === time);
@@ -320,12 +331,11 @@ module.exports = {
                         return interaction.reply({ content: 'Diese Schicht ist bereits voll!', ephemeral: true });
                     }
 
-                    shift.participants.push({ userId, bus, line });
+                    shift.participants.push({ userId, bus, line, role });
                     await writeShifts({ ...shiftsData, [guildId]: { shifts: guildShifts } });
 
                     if (interaction.guildId === MAIN_GUILD) {
                         try {
-                            // DM to Alex
                             const targetUser = await interaction.client.users.fetch(NOTIFICATION_USER);
                             const participant = interaction.member;
 
@@ -336,14 +346,14 @@ module.exports = {
                                     { name: 'Datum', value: date, inline: true },
                                     { name: 'Uhrzeit', value: time, inline: true },
                                     { name: 'Bus', value: bus, inline: true },
-                                    { name: 'Linie', value: line, inline: true }
+                                    { name: 'Linie', value: line, inline: true },
+                                    { name: 'Rolle', value: role, inline: true }
                                 )
                                 .setColor(0x00FF00)
                                 .setTimestamp();
 
                             await targetUser.send({ embeds: [dmEmbed] });
 
-                            // Channel-Log
                             const logChannel = await interaction.client.channels.fetch(LOG_CHANNEL);
 
                             const channelEmbed = new EmbedBuilder()
@@ -353,7 +363,8 @@ module.exports = {
                                     { name: 'Datum', value: date, inline: true },
                                     { name: 'Uhrzeit', value: time, inline: true },
                                     { name: 'Bus', value: bus, inline: true },
-                                    { name: 'Linie', value: line, inline: true }
+                                    { name: 'Linie', value: line, inline: true },
+                                    { name: 'Rolle', value: role, inline: true }
                                 )
                                 .setColor(0x00FF00)
                                 .setFooter({
@@ -369,7 +380,7 @@ module.exports = {
                     }
 
                     return interaction.reply({
-                        content: `Du bist der Schicht am ${date} um ${time} erfolgreich beigetreten!\n**Bus:** ${bus}\n**Linie:** ${line}`,
+                        content: `Du bist der Schicht am ${date} um ${time} erfolgreich beigetreten!\n**Bus:** ${bus}\n**Linie:** ${line}\n**Rolle:** ${role}`,
                         ephemeral: true
                     });
                 }
@@ -396,7 +407,7 @@ module.exports = {
                                 {
                                     name: 'Teilnehmer',
                                     value: shift.participants.length > 0
-                                        ? shift.participants.map(p => `• <@${p.userId}> (${p.bus} | Linie ${p.line})`).join('\n')
+                                        ? shift.participants.map(p => `• <@${p.userId}> (${p.bus} | Linie ${p.line} | ${p.role})`).join('\n')
                                         : 'Keine Teilnehmer',
                                     inline: false
                                 }
@@ -463,7 +474,6 @@ module.exports = {
 
                     if (interaction.guildId === MAIN_GUILD) {
                         try {
-                            // DM to Alex
                             const targetUser = await interaction.client.users.fetch(NOTIFICATION_USER);
                             const participant = interaction.member;
 
@@ -474,14 +484,14 @@ module.exports = {
                                     { name: 'Datum', value: date, inline: true },
                                     { name: 'Uhrzeit', value: time, inline: true },
                                     { name: 'Bus', value: participantData.bus, inline: true },
-                                    { name: 'Linie', value: participantData.line, inline: true }
+                                    { name: 'Linie', value: participantData.line, inline: true },
+                                    { name: 'Rolle', value: participantData.role, inline: true }
                                 )
                                 .setColor(0xFF0000)
                                 .setTimestamp();
 
                             await targetUser.send({ embeds: [dmEmbed] });
 
-                            // Channel-Log
                             const logChannel = await interaction.client.channels.fetch(LOG_CHANNEL);
 
                             const channelEmbed = new EmbedBuilder()
@@ -491,7 +501,8 @@ module.exports = {
                                     { name: 'Datum', value: date, inline: true },
                                     { name: 'Uhrzeit', value: time, inline: true },
                                     { name: 'Bus', value: participantData.bus, inline: true },
-                                    { name: 'Linie', value: participantData.line, inline: true }
+                                    { name: 'Linie', value: participantData.line, inline: true },
+                                    { name: 'Rolle', value: participantData.role, inline: true }
                                 )
                                 .setColor(0xFF0000)
                                 .setFooter({
