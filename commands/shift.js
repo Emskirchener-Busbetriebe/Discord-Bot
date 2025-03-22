@@ -571,7 +571,7 @@ module.exports = {
                             console.error('Benachrichtigungsfehler beim Verlassen:', error);
                         }
                     }
-           case 'add': {
+                case 'add': {
                     if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
                         return interaction.reply({ content: 'Nur Admins können Schichten bearbeiten!', ephemeral: true });
                     }
