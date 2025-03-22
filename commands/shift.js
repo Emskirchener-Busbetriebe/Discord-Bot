@@ -78,7 +78,10 @@ async function scheduleShiftStart(client, shift, guildId) {
                     }
                 }
 
-                setTimeout(7200000).then(async () => {
+                const endTime = new Date(startTime.getTime() + currentShift.duration * 60 * 60 * 1000);
+                const endTimeout = endTime - startTime;
+
+                setTimeout(endTimeout).then(async () => {
                     const shiftsData = await readShifts();
                     const guildShifts = shiftsData[guildId]?.shifts || [];
                     const index = guildShifts.findIndex(s => s.id === shift.id);
@@ -86,6 +89,32 @@ async function scheduleShiftStart(client, shift, guildId) {
                     if (index !== -1) {
                         guildShifts.splice(index, 1);
                         await writeShifts({ ...shiftsData, [guildId]: { shifts: guildShifts } });
+
+                        const endTimestamp = Math.floor(endTime.getTime() / 1000);
+                        const endEmbed = new EmbedBuilder()
+                            .setTitle('Schicht endet jetzt')
+                            .setDescription(`**Endzeit:** <t:${endTimestamp}:F>`)
+                            .addFields({ name: 'Teilnehmer', value: participants })
+                            .setColor(0xFF0000)
+                            .setFooter({
+                                text: `${channel.guild.name} | Bot`,
+                                iconURL: client.user.displayAvatarURL()
+                            })
+                            .setTimestamp();
+
+                        await channel.send({ embeds: [endEmbed] });
+
+                        for (const participant of currentShift.participants) {
+                            try {
+                                const user = await client.users.fetch(participant.userId);
+                                await user.send({
+                                    content: `Die Schicht am ${currentShift.date} um ${currentShift.time} endet jetzt!`,
+                                    embeds: [endEmbed]
+                                });
+                            } catch (error) {
+                                console.error(`DM Fehler an ${participant.userId}:`, error.message);
+                            }
+                        }
                     }
                 });
             });
@@ -110,6 +139,10 @@ module.exports = {
                 .addStringOption(option =>
                     option.setName('time')
                         .setDescription('Uhrzeit (HH:MM)')
+                        .setRequired(true))
+                .addIntegerOption(option =>
+                    option.setName('duration')
+                        .setDescription('Dauer der Schicht in Stunden')
                         .setRequired(true))
                 .addIntegerOption(option =>
                     option.setName('max')
@@ -218,6 +251,7 @@ module.exports = {
 
                     const date = interaction.options.getString('date');
                     const time = interaction.options.getString('time');
+                    const duration = interaction.options.getInteger('duration');
                     const max = interaction.options.getInteger('max');
 
                     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
@@ -234,6 +268,10 @@ module.exports = {
                     const [hours, minutes] = time.split(':').map(Number);
                     if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
                         return interaction.reply({ content: 'Ungültige Uhrzeit!', ephemeral: true });
+                    }
+
+                    if (duration <= 0) {
+                        return interaction.reply({ content: 'Ungültige Dauer! Die Dauer muss mindestens 1 Stunde betragen.', ephemeral: true });
                     }
 
                     if (max <= 0) {
@@ -253,6 +291,7 @@ module.exports = {
                         id: Date.now().toString(),
                         date,
                         time,
+                        duration, // Dauer in Stunden
                         maxMembers: max,
                         participants: [],
                         channelId: interaction.channelId
@@ -264,30 +303,19 @@ module.exports = {
                     scheduleShiftStart(interaction.client, newShift, guildId);
 
                     const startTimestamp = Math.floor(startTime.getTime() / 1000);
+                    const endTime = new Date(startTime.getTime() + duration * 60 * 60 * 1000);
+                    const endTimestamp = Math.floor(endTime.getTime() / 1000);
+
                     const adEmbed = new EmbedBuilder()
                         .setTitle('Neue Schicht verfügbar')
                         .setDescription('Nutze `/shift join`, um dieser Schicht beizutreten!')
                         .addFields(
-                            {
-                                name: 'Datum',
-                                value: date,
-                                inline: true
-                            },
-                            {
-                                name: 'Uhrzeit',
-                                value: time,
-                                inline: true
-                            },
-                            {
-                                name: 'Maximale Teilnehmer',
-                                value: `${max} Personen`,
-                                inline: false
-                            },
-                            {
-                                name: 'Startzeit',
-                                value: `<t:${startTimestamp}:F>`,
-                                inline: false
-                            }
+                            { name: 'Datum', value: date, inline: true },
+                            { name: 'Uhrzeit', value: time, inline: true },
+                            { name: 'Dauer', value: `${duration} Stunden`, inline: true },
+                            { name: 'Maximale Teilnehmer', value: `${max} Personen`, inline: false },
+                            { name: 'Startzeit', value: `<t:${startTimestamp}:F>`, inline: false },
+                            { name: 'Endzeit', value: `<t:${endTimestamp}:F>`, inline: false }
                         )
                         .setColor(0x00FF00)
                         .setFooter({
@@ -332,7 +360,6 @@ module.exports = {
                     }
 
                     if (role === 'Supervisor') {
-                        // Rolle 1292478179495379017
                         const member = interaction.member;
                         if (!member.roles.cache.has('1292478179495379017')) {
                             return interaction.reply({
@@ -414,15 +441,19 @@ module.exports = {
                     const embeds = [];
                     for (const shift of guildShifts) {
                         const startTime = new Date(`${shift.date}T${shift.time}:00`);
+                        const endTime = new Date(startTime.getTime() + shift.duration * 60 * 60 * 1000);
                         const status = startTime < now ? ' (bereits vorbei)' : '';
                         const startTimestamp = Math.floor(startTime.getTime() / 1000);
+                        const endTimestamp = Math.floor(endTime.getTime() / 1000);
 
                         const embed = new EmbedBuilder()
                             .setTitle(`Schicht am ${shift.date} um ${shift.time}${status}`)
                             .addFields(
+                                { name: 'Dauer', value: `${shift.duration} Stunden`, inline: true },
                                 { name: 'Maximale Teilnehmer', value: shift.maxMembers.toString(), inline: true },
                                 { name: 'Belegte Plätze', value: shift.participants.length.toString(), inline: true },
                                 { name: 'Startzeit', value: `<t:${startTimestamp}:F>`, inline: false },
+                                { name: 'Endzeit', value: `<t:${endTimestamp}:F>`, inline: false },
                                 {
                                     name: 'Teilnehmer',
                                     value: shift.participants.length > 0
