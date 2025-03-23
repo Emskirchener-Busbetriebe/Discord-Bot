@@ -226,6 +226,11 @@ module.exports = {
                 .setName('list')
                 .setDescription('Alle Schichten anzeigen')
         ),
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('edit')
+                .setDescription('Eine Shift bearbeiten')
+        ),
 
     async execute(interaction) {
         if (!interaction.inGuild()) {
@@ -566,7 +571,90 @@ module.exports = {
                             console.error('Benachrichtigungsfehler beim Verlassen:', error);
                         }
                     }
+                case 'add': {
+                    if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+                        return interaction.reply({ content: 'Nur Admins können Schichten bearbeiten!', ephemeral: true });
+                    }
 
+                    const date = interaction.options.getString('date');
+                    const time = interaction.options.getString('time');
+                    const duration = interaction.options.getInteger('duration');
+                    const max = interaction.options.getInteger('max');
+
+                    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+                        return interaction.reply({ content: 'Ungültiges Datumsformat! Verwende YYYY-MM-DD.', ephemeral: true });
+                    }
+                    const dateObj = new Date(date);
+                    if (isNaN(dateObj.getTime())) {
+                        return interaction.reply({ content: 'Ungültiges Datum!', ephemeral: true });
+                    }
+
+                    if (!/^\d{2}:\d{2}$/.test(time)) {
+                        return interaction.reply({ content: 'Ungültiges Zeitformat! Verwende HH:MM.', ephemeral: true });
+                    }
+                    const [hours, minutes] = time.split(':').map(Number);
+                    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+                        return interaction.reply({ content: 'Ungültige Uhrzeit!', ephemeral: true });
+                    }
+
+                    if (duration <= 0) {
+                        return interaction.reply({ content: 'Ungültige Dauer! Die Dauer muss mindestens 1 Stunde betragen.', ephemeral: true });
+                    }
+
+                    if (max <= 0) {
+                        return interaction.reply({ content: 'Ungültige Teilnehmer Anzahl!', ephemeral: true });
+                    }
+
+                    const startTime = new Date(`${date}T${time}:00`);
+                    if (startTime <= new Date()) {
+                        return interaction.reply({ content: 'Die Schicht muss in der Zukunft liegen!', ephemeral: true });
+                    }
+
+                    if (guildShifts.some(s => s.date === date && s.time === time)) {
+                        return interaction.reply({ content: 'Es existiert bereits eine Schicht zu dieser Zeit!', ephemeral: true });
+                    }
+
+                    const newShift = {
+                        id: Date.now().toString(),
+                        date,
+                        time,
+                        duration, // Dauer in Stunden
+                        maxMembers: max,
+                        participants: [],
+                        channelId: interaction.channelId
+                    };
+
+                    guildShifts.push(newShift);
+                    await writeShifts({ ...shiftsData, [guildId]: { shifts: guildShifts } });
+
+                    scheduleShiftStart(interaction.client, newShift, guildId);
+
+                    const startTimestamp = Math.floor(startTime.getTime() / 1000);
+                    const endTime = new Date(startTime.getTime() + duration * 60 * 60 * 1000);
+                    const endTimestamp = Math.floor(endTime.getTime() / 1000);
+
+                    const adEmbed = new EmbedBuilder()
+                        .setTitle('Bearbeitete Schicht verfügbar')
+                        .setDescription('Nutze `/shift join`, um dieser Schicht beizutreten!')
+                        .addFields(
+                            { name: 'Datum', value: date, inline: true },
+                            { name: 'Uhrzeit', value: time, inline: true },
+                            { name: 'Dauer', value: `${duration} Stunden`, inline: true },
+                            { name: 'Maximale Teilnehmer', value: `${max} Personen`, inline: false },
+                            { name: 'Startzeit', value: `<t:${startTimestamp}:F>`, inline: false },
+                            { name: 'Endzeit', value: `<t:${endTimestamp}:F>`, inline: false }
+                        )
+                        .setColor(0x00FF00)
+                        .setFooter({
+                            text: `${interaction.guild.name} | Bot`,
+                            iconURL: interaction.client.user.displayAvatarURL()
+                        })
+                        .setTimestamp();
+
+                    await interaction.reply({ embeds: [adEmbed] });
+                    break;
+                }
+                    
                     return interaction.reply({
                         content: `Du hast die Schicht am ${date} um ${time} verlassen!`,
                         ephemeral: true
