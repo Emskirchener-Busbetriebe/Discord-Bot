@@ -78,7 +78,6 @@ for (const file of commandFiles) {
     }
 }
 
-// Events laden
 const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 

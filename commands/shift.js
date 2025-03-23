@@ -225,6 +225,35 @@ module.exports = {
             subcommand
                 .setName('list')
                 .setDescription('Alle Schichten anzeigen')
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('edit')
+                .setDescription('Eine Shift bearbeiten')
+                .addStringOption(option =>
+                    option.setName('date')
+                        .setDescription('Datum (YYYY-MM-DD)')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('time')
+                        .setDescription('Uhrzeit (HH:MM)')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('new-date')
+                        .setDescription('Neues Datum (YYYY-MM-DD)')
+                        .setRequired(false))
+                .addStringOption(option =>
+                    option.setName('new-time')
+                        .setDescription('Neue Uhrzeit (HH:MM)')
+                        .setRequired(false))
+                .addIntegerOption(option =>
+                    option.setName('duration')
+                        .setDescription('Neue Dauer der Schicht in Stunden')
+                        .setRequired(false))
+                .addIntegerOption(option =>
+                    option.setName('max')
+                        .setDescription('Neue maximale Teilnehmer')
+                        .setRequired(false))
         ),
 
     async execute(interaction) {
@@ -291,7 +320,7 @@ module.exports = {
                         id: Date.now().toString(),
                         date,
                         time,
-                        duration, // Dauer in Stunden
+                        duration,
                         maxMembers: max,
                         participants: [],
                         channelId: interaction.channelId
@@ -509,18 +538,18 @@ module.exports = {
                     const shift = guildShifts.find(s => s.date === date && s.time === time);
 
                     if (!shift) {
-                        return interaction.reply({ content: 'Schicht nicht gefunden!', ephemeral: true });
+                        return interaction.reply({content: 'Schicht nicht gefunden!', ephemeral: true});
                     }
 
                     const participantIndex = shift.participants.findIndex(p => p.userId === userId);
                     if (participantIndex === -1) {
-                        return interaction.reply({ content: 'Du bist nicht in dieser Schicht!', ephemeral: true });
+                        return interaction.reply({content: 'Du bist nicht in dieser Schicht!', ephemeral: true});
                     }
 
                     const participantData = shift.participants[participantIndex];
 
                     shift.participants.splice(participantIndex, 1);
-                    await writeShifts({ ...shiftsData, [guildId]: { shifts: guildShifts } });
+                    await writeShifts({...shiftsData, [guildId]: {shifts: guildShifts}});
 
                     if (interaction.guildId === MAIN_GUILD) {
                         try {
@@ -531,16 +560,16 @@ module.exports = {
                                 .setTitle('Schicht verlassen')
                                 .setDescription(`${participant} hat eine Schicht verlassen`)
                                 .addFields(
-                                    { name: 'Datum', value: date, inline: true },
-                                    { name: 'Uhrzeit', value: time, inline: true },
-                                    { name: 'Bus', value: participantData.bus, inline: true },
-                                    { name: 'Linie', value: participantData.line, inline: true },
-                                    { name: 'Rolle', value: participantData.role, inline: true }
+                                    {name: 'Datum', value: date, inline: true},
+                                    {name: 'Uhrzeit', value: time, inline: true},
+                                    {name: 'Bus', value: participantData.bus, inline: true},
+                                    {name: 'Linie', value: participantData.line, inline: true},
+                                    {name: 'Rolle', value: participantData.role, inline: true}
                                 )
                                 .setColor(0xFF0000)
                                 .setTimestamp();
 
-                            await targetUser.send({ embeds: [dmEmbed] });
+                            await targetUser.send({embeds: [dmEmbed]});
 
                             const logChannel = await interaction.client.channels.fetch(LOG_CHANNEL);
 
@@ -548,11 +577,11 @@ module.exports = {
                                 .setTitle('Schicht verlassen')
                                 .setDescription(`<@${userId}> hat die Schicht verlassen`)
                                 .addFields(
-                                    { name: 'Datum', value: date, inline: true },
-                                    { name: 'Uhrzeit', value: time, inline: true },
-                                    { name: 'Bus', value: participantData.bus, inline: true },
-                                    { name: 'Linie', value: participantData.line, inline: true },
-                                    { name: 'Rolle', value: participantData.role, inline: true }
+                                    {name: 'Datum', value: date, inline: true},
+                                    {name: 'Uhrzeit', value: time, inline: true},
+                                    {name: 'Bus', value: participantData.bus, inline: true},
+                                    {name: 'Linie', value: participantData.line, inline: true},
+                                    {name: 'Rolle', value: participantData.role, inline: true}
                                 )
                                 .setColor(0xFF0000)
                                 .setFooter({
@@ -561,7 +590,7 @@ module.exports = {
                                 })
                                 .setTimestamp();
 
-                            await logChannel.send({ embeds: [channelEmbed] });
+                            await logChannel.send({embeds: [channelEmbed]});
                         } catch (error) {
                             console.error('Benachrichtigungsfehler beim Verlassen:', error);
                         }
@@ -571,6 +600,67 @@ module.exports = {
                         content: `Du hast die Schicht am ${date} um ${time} verlassen!`,
                         ephemeral: true
                     });
+                }
+
+                case 'edit': {
+                    if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+                        return interaction.reply({ content: 'Nur Admins können Schichten bearbeiten!', ephemeral: true });
+                    }
+
+                    const date = interaction.options.getString('date');
+                    const time = interaction.options.getString('time');
+                    const newDate = interaction.options.getString('new-date');
+                    const newTime = interaction.options.getString('new-time');
+                    const duration = interaction.options.getInteger('duration');
+                    const max = interaction.options.getInteger('max');
+
+                    const shiftIndex = guildShifts.findIndex(s => s.date === date && s.time === time);
+                    if (shiftIndex === -1) {
+                        return interaction.reply({ content: 'Schicht nicht gefunden!', ephemeral: true });
+                    }
+
+                    const shift = guildShifts[shiftIndex];
+
+                    if (newDate && !/^\d{4}-\d{2}-\d{2}$/.test(newDate)) {
+                        return interaction.reply({ content: 'Ungültiges Datumsformat! Verwende YYYY-MM-DD.', ephemeral: true });
+                    }
+
+                    if (newTime && !/^\d{2}:\d{2}$/.test(newTime)) {
+                        return interaction.reply({ content: 'Ungültiges Zeitformat! Verwende HH:MM.', ephemeral: true });
+                    }
+
+                    if (newDate) shift.date = newDate;
+                    if (newTime) shift.time = newTime;
+                    if (duration !== null && duration > 0) shift.duration = duration;
+                    if (max !== null && max > 0) shift.maxMembers = max;
+
+                    await writeShifts({ ...shiftsData, [guildId]: { shifts: guildShifts } });
+
+                    const startTime = new Date(`${shift.date}T${shift.time}:00`);
+                    const startTimestamp = Math.floor(startTime.getTime() / 1000);
+                    const endTime = new Date(startTime.getTime() + shift.duration * 60 * 60 * 1000);
+                    const endTimestamp = Math.floor(endTime.getTime() / 1000);
+
+                    const adEmbed = new EmbedBuilder()
+                        .setTitle('Schicht bearbeitet')
+                        .setDescription('Nutze `/shift join`, um dieser Schicht beizutreten!')
+                        .addFields(
+                            { name: 'Datum', value: shift.date, inline: true },
+                            { name: 'Uhrzeit', value: shift.time, inline: true },
+                            { name: 'Dauer', value: `${shift.duration} Stunden`, inline: true },
+                            { name: 'Maximale Teilnehmer', value: `${shift.maxMembers} Personen`, inline: false },
+                            { name: 'Startzeit', value: `<t:${startTimestamp}:F>`, inline: false },
+                            { name: 'Endzeit', value: `<t:${endTimestamp}:F>`, inline: false }
+                        )
+                        .setColor(0x00FF00)
+                        .setFooter({
+                            text: `${interaction.guild.name} | Bot`,
+                            iconURL: interaction.client.user.displayAvatarURL()
+                        })
+                        .setTimestamp();
+
+                    await interaction.reply({ embeds: [adEmbed] });
+                    break;
                 }
             }
         } catch (error) {
