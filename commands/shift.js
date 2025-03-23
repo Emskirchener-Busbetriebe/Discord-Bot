@@ -8,6 +8,12 @@ const MAIN_GUILD = "1104669016565489675";
 const NOTIFICATION_USER = "923585143912955994";
 const LOG_CHANNEL = "1350865603799420999";
 
+const colors = {
+    reset: '\x1b[0m',
+    green: '\x1b[32m',
+    gray: '\x1b[90m',
+};
+
 async function readShifts() {
     try {
         const data = await readFile(shiftsPath, 'utf8');
@@ -674,6 +680,6 @@ module.exports = {
 
     async init(client) {
         scheduleAllShifts(client);
-        console.log('Shift-System initialisiert');
+        console.log(`${colors.gray}shift-system:${colors.reset} ${colors.green}initialized${colors.reset}`);
     }
 };
