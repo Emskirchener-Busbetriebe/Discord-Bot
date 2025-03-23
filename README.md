@@ -34,6 +34,8 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
 
   `/shift delete`: Damit können erstellte Schichten wieder gelöscht werden. Dazu benötigt man das Datum sowie die Uhrzeit der Schicht.
 
+  `/shift edit`: Bereits erstellte Schichten können einfach bearbeitet werden.
+
   `/shift list`: Listet alle Schichten auf, die im System vorhanden sind, inklusive der Teilnehmer. Schichten werden 2 Stunden nach Beginn der jeweiligen Schicht automatisch gelöscht.
 
   `/shift join`: Damit kann ein Mitglied einer Schicht beitreten. Dazu benötigt es das Datum sowie die Uhrzeit der Schicht. Zusätzlich wird der Benutzer nach dem Bus ,der Linie gefragt, die er fahren möchte und welche Rolle er machen möchte. Diese werden automatisch vorgeschlagen.
