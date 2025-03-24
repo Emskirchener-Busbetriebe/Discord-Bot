@@ -192,7 +192,9 @@ module.exports = {
                             { name: 'MAN Lion\'s City 1000 Feuerwehr (EM VG 125)', value: 'EM VG 125' },
                             { name: 'MAN Lion\'s City 1000 Rewe (EM VG 136)', value: 'EM VG 136' },
                             { name: 'MAN Lion\'s City 1000 Silvester (EM VG 197)', value: 'EM VG 197' },
-                            { name: 'Iveco Crossway LE (105)', value: '105' }
+                            { name: 'Iveco Crossway LE (105)', value: '105'},
+                            { name: 'N/A', value: 'N/A' }
+
                         ))
                 .addStringOption(option =>
                     option.setName('line')
@@ -201,7 +203,8 @@ module.exports = {
                         .addChoices(
                             { name: '132 (Altschauernberg Feuerwehr ↔ Emskirchen Bahnhof)', value: '132' },
                             { name: '61 (ZOB Emskirchen ↔ Wulkersdorfer Straße)', value: '61' },
-                            { name: '64 (Emskirchen Festplatz ↔ Wulkersdorfer Straße)', value: '64' }
+                            { name: '64 (Emskirchen Festplatz ↔ Wulkersdorfer Straße)', value: '64' },
+                            { name: 'N/A', value: 'N/A' }
                         ))
                 .addStringOption(option =>
                     option.setName('role')
@@ -398,7 +401,7 @@ module.exports = {
                         const member = interaction.member;
                         if (!member.roles.cache.has('1292478179495379017')) {
                             return interaction.reply({
-                                content: 'Du bist kein Supervisor! Fehlende Berechtigung.',
+                                content: 'Du bist kein Supervisor! Nur <@&1292478179495379017> können als Supervisor joinen.',
                                 ephemeral: true
                             });
                         }
