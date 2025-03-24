@@ -3,7 +3,6 @@ const path = require('path');
 const { Client, Collection, GatewayIntentBits, ActivityType, REST, Routes } = require('discord.js');
 require('dotenv').config();
 
-// ANSI-Escape-Codes für farbige Logs
 const colors = {
     reset: '\x1b[0m',
     bright: '\x1b[1m',
