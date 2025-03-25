@@ -194,7 +194,6 @@ module.exports = {
                             { name: 'MAN Lion\'s City 1000 Silvester (EM VG 197)', value: 'EM VG 197' },
                             { name: 'Iveco Crossway LE (105)', value: '105'},
                             { name: 'N/A', value: 'N/A' }
-
                         ))
                 .addStringOption(option =>
                     option.setName('line')
@@ -395,6 +394,13 @@ module.exports = {
 
                     if (shift.participants.length >= shift.maxMembers) {
                         return interaction.reply({ content: 'Diese Schicht ist bereits voll!', ephemeral: true });
+                    }
+
+                    if (bus !== 'N/A' && shift.participants.some(p => p.bus === bus)) {
+                        return interaction.reply({
+                            content: `Der Bus ${bus} ist in dieser Schicht bereits vergeben!`,
+                            ephemeral: true
+                        });
                     }
 
                     if (role === 'Supervisor') {
