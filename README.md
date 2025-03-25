@@ -1,6 +1,6 @@
 # Emskirchener-Busbetriebe Discord-Bot | Beta 1.2.1
 Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.  
-[Link zum Server](https://discord.gg/VAeNtnBF)  
+[Link zum Server](https://discord.gg/4mNHuCKUjR)
 
 **Version:** Beta 1.2.1!!!
 
