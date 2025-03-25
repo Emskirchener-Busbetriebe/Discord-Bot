@@ -1,9 +1,10 @@
 # Emskirchener-Busbetriebe Discord-Bot | Beta 1.0
-
+#Developing branch
 Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.  
 [Link zum Server](https://discord.gg/VAeNtnBF)  
 
-**Version:** Beta 1.0!!!
+**Version:** Beta 1.2!!!
+
 
 ## Commands
 
@@ -33,6 +34,8 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
   `/shift add`: Mit diesem Befehl legt ein Admin Datum, Uhrzeit sowie die maximale Teilnehmeranzahl für eine Schicht fest. Der Bot antwortet mit einem Embed, das für alle zugänglich ist und die Informationen auflistet.
 
   `/shift delete`: Damit können erstellte Schichten wieder gelöscht werden. Dazu benötigt man das Datum sowie die Uhrzeit der Schicht.
+
+  `/shift edit`: Bereits erstellte Schichten können einfach bearbeitet werden.
 
   `/shift list`: Listet alle Schichten auf, die im System vorhanden sind, inklusive der Teilnehmer. Schichten werden 2 Stunden nach Beginn der jeweiligen Schicht automatisch gelöscht.
 

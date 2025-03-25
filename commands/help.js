@@ -14,6 +14,8 @@ module.exports = {
                 { name: '/meme', value: 'Mit `/meme` zeigt der Bot ein zufälliges Meme mithilfe der Meme-API an.' },
                 { name: '/uptime', value: 'Ein `/uptime`-Befehl, der die Laufzeit des Discord Bots anzeigt.' },
                 { name: '/clear', value: 'Der `/clear`-Befehl löscht eine bestimmte Anzahl von Nachrichten in einem Kanal.' },
+                { name: '/bot-info', value: 'Zeigt Informationen über den Bot an.' },
+                { name: '/server-info', value: 'Zeigt Informationen den Discord-Server an.' },
                 { name: '/shift list', value: 'Listet alle aktiven Schichten inklusive Teilnehmer auf.' },
                 { name: '/shift join', value: 'Tritt einer Schicht bei und wähle Bus und Linie aus.' },
                 { name: '/shift leave', value: 'Verlasse eine Schicht anhand von Datum und Uhrzeit.' }
