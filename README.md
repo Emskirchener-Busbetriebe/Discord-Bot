@@ -3,7 +3,8 @@
 Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.  
 [Link zum Server](https://discord.gg/VAeNtnBF)  
 
-**Version:** Beta 1.0!!!
+**Version:** Beta 1.2!!!
+
 
 ## Commands
 
