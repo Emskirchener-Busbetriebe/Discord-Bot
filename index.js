@@ -184,9 +184,6 @@ async function initialize() {
         console.log(`${colors.red}=== [FATAL] Fatal error during bot initialization sequence: ===${colors.reset}`, error);
         process.exit(1);
     }
-    const eventChecker = require('./eventChecker');
-    eventChecker(client);
-
 }
 
 initialize();
