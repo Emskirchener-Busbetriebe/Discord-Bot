@@ -9,7 +9,7 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setTitle('👋 Willkommen!')
-            .setDescription(`Willkommen auf dem ÖPNV Germany Discord-Server, ${member}! 🎉`)
+            .setDescription(`Willkommen auf dem Emskirchener Busbetriebe Discord-Server, ${member}! 🎉`)
             .setColor('#00ff00')
             .setTimestamp()
             .setFooter({ text: 'Hast du Fragen? Frag einfach einen Moderator!' });
