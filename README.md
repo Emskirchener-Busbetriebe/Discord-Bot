@@ -25,7 +25,7 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
 ---
 - **Warn Slash Command**: `/warn`, Warnt einen User und sendet eine Naricht in den Log Channel.
 ---
-- **Activty delete Slash Command**: `/warnings`, Listet die Warns einen Users in einem Embed auf.
+- **Activty delete Slash Command**: `/warnings`, Listet die Warns eines Users in einem Embed auf.
 ---
 
 ## Weitere Funktionen
