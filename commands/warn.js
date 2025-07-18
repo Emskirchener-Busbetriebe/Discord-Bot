@@ -94,6 +94,7 @@ module.exports = {
         await interaction.editReply({ embeds: [responseEmbed] });
     },
     loadWarnData,
+    saveWarnData,
     getUserWarns
 };
 
