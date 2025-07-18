@@ -1,8 +1,8 @@
-# Emskirchener-Busbetriebe Discord-Bot | Beta 1.2.1
+# Emskirchener-Busbetriebe Discord-Bot | Beta 1.2.2
 Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.  
 [Link zum Server](https://discord.gg/4mNHuCKUjR)
 
-**Version:** Beta 1.2.1!!!
+**Version:** Beta 1.2.2!!!
 
 
 ## Commands
@@ -22,6 +22,10 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
 - **Activity set Slash Command**: `/activity set`, Setz eine bestimmte Aktivität, auf Wunsch mit Zeitspanne, nach ablauf der Zeitspanne wird die Aktivität, aus der JSON geladen.
 ---
 - **Activty delete Slash Command**: `/activty delete`, löscht den aktuellen Status des Bot´s und lädt den Standart Status aus der JSON.
+---
+- **Warn Slash Command**: `/warn`, Warnt einen User und sendet eine Naricht in den Log Channel.
+---
+- **Activty delete Slash Command**: `/warnings`, Listet die Warns einen Users in einem Embed auf.
 ---
 
 ## Weitere Funktionen
