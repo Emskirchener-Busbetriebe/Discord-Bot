@@ -144,7 +144,7 @@ module.exports = {
                         .setRequired(true))
                 .addStringOption(option =>
                     option.setName('time')
-                        .setDescription('Uhrzeit (HH:MM)')
+                        .setDescription('Uhrzeit (UTC) (HH:MM)')
                         .setRequired(true))
                 .addIntegerOption(option =>
                     option.setName('duration')
@@ -165,7 +165,7 @@ module.exports = {
                         .setRequired(true))
                 .addStringOption(option =>
                     option.setName('time')
-                        .setDescription('Uhrzeit (HH:MM)')
+                        .setDescription('Uhrzeit (UTC) (HH:MM)')
                         .setRequired(true))
         )
         .addSubcommand(subcommand =>
@@ -178,7 +178,7 @@ module.exports = {
                         .setRequired(true))
                 .addStringOption(option =>
                     option.setName('time')
-                        .setDescription('Uhrzeit (HH:MM)')
+                        .setDescription('Uhrzeit (UTC) (HH:MM)')
                         .setRequired(true))
                 .addStringOption(option =>
                     option.setName('bus')
@@ -226,7 +226,7 @@ module.exports = {
                         .setRequired(true))
                 .addStringOption(option =>
                     option.setName('time')
-                        .setDescription('Uhrzeit (HH:MM)')
+                        .setDescription('Uhrzeit (UTC) (HH:MM)')
                         .setRequired(true))
         )
         .addSubcommand(subcommand =>
@@ -244,7 +244,7 @@ module.exports = {
                         .setRequired(true))
                 .addStringOption(option =>
                     option.setName('time')
-                        .setDescription('Uhrzeit (HH:MM)')
+                        .setDescription('Uhrzeit (UTC) (HH:MM)')
                         .setRequired(true))
                 .addStringOption(option =>
                     option.setName('new-date')
@@ -252,7 +252,7 @@ module.exports = {
                         .setRequired(false))
                 .addStringOption(option =>
                     option.setName('new-time')
-                        .setDescription('Neue Uhrzeit (HH:MM)')
+                        .setDescription('Neue Uhrzeit (UTC) (HH:MM)')
                         .setRequired(false))
                 .addIntegerOption(option =>
                     option.setName('duration')
@@ -304,7 +304,7 @@ module.exports = {
                     }
                     const [hours, minutes] = time.split(':').map(Number);
                     if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-                        return interaction.reply({ content: 'Ungültige Uhrzeit!', ephemeral: true });
+                        return interaction.reply({ content: 'Ungültige Uhrzeit (UTC)!', ephemeral: true });
                     }
 
                     if (duration <= 0) {
@@ -348,7 +348,7 @@ module.exports = {
                         .setDescription('Nutze `/shift join`, um dieser Schicht beizutreten!')
                         .addFields(
                             { name: 'Datum', value: date, inline: true },
-                            { name: 'Uhrzeit', value: time, inline: true },
+                            { name: 'Uhrzeit (UTC)', value: time, inline: true },
                             { name: 'Dauer', value: `${duration} Stunden`, inline: true },
                             { name: 'Maximale Teilnehmer', value: `${max} Personen`, inline: false },
                             { name: 'Startzeit', value: `<t:${startTimestamp}:F>`, inline: false },
@@ -434,7 +434,7 @@ module.exports = {
                                 .setDescription(`${participant} hat sich für eine Schicht angemeldet`)
                                 .addFields(
                                     { name: 'Datum', value: date, inline: true },
-                                    { name: 'Uhrzeit', value: time, inline: true },
+                                    { name: 'Uhrzeit (UTC)', value: time, inline: true },
                                     { name: 'Bus', value: bus, inline: true },
                                     { name: 'Linie', value: line, inline: true },
                                     { name: 'Rolle', value: role, inline: true }
@@ -451,7 +451,7 @@ module.exports = {
                                 .setDescription(`<@${userId}> hat sich angemeldet`)
                                 .addFields(
                                     { name: 'Datum', value: date, inline: true },
-                                    { name: 'Uhrzeit', value: time, inline: true },
+                                    { name: 'Uhrzeit (UTC)', value: time, inline: true },
                                     { name: 'Bus', value: bus, inline: true },
                                     { name: 'Linie', value: line, inline: true },
                                     { name: 'Rolle', value: role, inline: true }
@@ -576,7 +576,7 @@ module.exports = {
                                 .setDescription(`${participant} hat eine Schicht verlassen`)
                                 .addFields(
                                     {name: 'Datum', value: date, inline: true},
-                                    {name: 'Uhrzeit', value: time, inline: true},
+                                    {name: 'Uhrzeit (UTC)', value: time, inline: true},
                                     {name: 'Bus', value: participantData.bus, inline: true},
                                     {name: 'Linie', value: participantData.line, inline: true},
                                     {name: 'Rolle', value: participantData.role, inline: true}
@@ -593,7 +593,7 @@ module.exports = {
                                 .setDescription(`<@${userId}> hat die Schicht verlassen`)
                                 .addFields(
                                     {name: 'Datum', value: date, inline: true},
-                                    {name: 'Uhrzeit', value: time, inline: true},
+                                    {name: 'Uhrzeit (UTC)', value: time, inline: true},
                                     {name: 'Bus', value: participantData.bus, inline: true},
                                     {name: 'Linie', value: participantData.line, inline: true},
                                     {name: 'Rolle', value: participantData.role, inline: true}
@@ -661,7 +661,7 @@ module.exports = {
                         .setDescription('Nutze `/shift join`, um dieser Schicht beizutreten!')
                         .addFields(
                             { name: 'Datum', value: shift.date, inline: true },
-                            { name: 'Uhrzeit', value: shift.time, inline: true },
+                            { name: 'Uhrzeit (UTC)', value: shift.time, inline: true },
                             { name: 'Dauer', value: `${shift.duration} Stunden`, inline: true },
                             { name: 'Maximale Teilnehmer', value: `${shift.maxMembers} Personen`, inline: false },
                             { name: 'Startzeit', value: `<t:${startTimestamp}:F>`, inline: false },
