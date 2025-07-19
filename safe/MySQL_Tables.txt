@@ -1,0 +1,11 @@
+CREATE TABLE warns (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    discordID VARCHAR(255) NOT NULL,
+    discordUsername VARCHAR(255) NOT NULL,
+    reason TEXT,
+    moderatorID VARCHAR(255) NOT NULL,
+    moderatorUsername VARCHAR(255) NOT NULL,
+    date DATE NOT NULL,
+    time TIME NOT NULL,
+    warncount INT NOT NULL
+);
