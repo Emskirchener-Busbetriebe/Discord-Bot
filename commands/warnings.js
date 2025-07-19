@@ -22,7 +22,6 @@ module.exports = {
                 return;
             }
 
-            // Sortiere nach Warnnummer (aufsteigend)
             warns = warns.sort((a, b) => a.warncount - b.warncount);
 
             const embed = new EmbedBuilder()
@@ -31,7 +30,6 @@ module.exports = {
                 .setDescription(`**Insgesamt:** ${warns.length} Warn(s)`);
 
             warns.forEach(warn => {
-                // Extrahiere Datum und Zeit korrekt
                 let datePart, timePart;
 
                 if (warn.timestamp) {
@@ -70,11 +68,11 @@ module.exports = {
                 });
             });
 
-            // Neuer Footer mit Bot-Icon und Timestamp
             embed.setFooter({
-                text: `Emskirchener Busbetriebe | Bot • ${new Date().toLocaleString('de-DE')}`,
+                text: `Emskirchener Busbetriebe | Bot`,
                 iconURL: interaction.client.user.displayAvatarURL()
-            });
+            })
+            .setTimestamp();
 
             await interaction.editReply({ embeds: [embed] });
 

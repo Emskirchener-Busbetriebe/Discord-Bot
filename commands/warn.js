@@ -2,6 +2,12 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
+function getCorrectBerlinTime() {
+    const now = new Date();
+    const berlinOffset = now.getTimezoneOffset() + (now.getHours() >= 3 ? 120 : 60);
+    return new Date(now.getTime() + berlinOffset * 60000);
+}
+
 const pool = mysql.createPool({
     host: 'emskirchener-bus-betriebe.lima-db.de',
     user: 'USER445815_bot',
@@ -21,7 +27,10 @@ async function addWarn(guildId, userId, username, reason, moderatorId, moderator
             [userId]
         );
 
-        const now = new Date();
+        const berlinNow = getCorrectBerlinTime();
+        const dateStr = berlinNow.toISOString().split('T')[0];
+        const timeStr = berlinNow.toTimeString().split(' ')[0].substring(0, 8);
+
         await pool.execute(
             'INSERT INTO warns (discordID, discordUsername, reason, moderatorID, moderatorUsername, date, time, warncount) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [
@@ -30,16 +39,25 @@ async function addWarn(guildId, userId, username, reason, moderatorId, moderator
                 reason,
                 moderatorId,
                 moderatorUsername,
-                now.toISOString().split('T')[0],
-                now.toTimeString().split(' ')[0],
+                dateStr,
+                timeStr,
                 warnCount[0].count + 1
             ]
         );
 
+        const formattedTime = berlinNow.toLocaleString('de-DE', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        }).replace(',', '');
+
         return {
             username,
             reason,
-            timestamp: now.toLocaleString('de-DE', { timeZone: 'Europe/Berlin' }),
+            timestamp: formattedTime + ' Uhr',
             warnCount: warnCount[0].count + 1
         };
     } catch (error) {
@@ -92,8 +110,12 @@ module.exports = {
 
             const responseEmbed = new EmbedBuilder()
                 .setColor(0xFFA500)
-                .setTitle('⚠️ Warn erfolgreich')
-                .setDescription(`${user.tag} wurde verwarnt. (Warn #${warn.warnCount})`);
+                .setDescription(`✅ ${user.toString()} wurde mit dem Grund **${reason}** verwarnt. (Warn #${warn.warnCount})`)
+                .setFooter({
+                    text: `Emskirchener Busbetriebe | Warnsystem`,
+                    iconURL: interaction.client.user.displayAvatarURL()
+                })
+                .setTimestamp();
 
             const logEmbed = new EmbedBuilder()
                 .setColor(0xFFA500)
