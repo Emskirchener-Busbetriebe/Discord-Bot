@@ -62,9 +62,8 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
 
 3. Erstelle eine .env-Datei im Hauptverzeichnis und füge den Bot-Token und die ClientID ein. (Frage Leon nach den Daten.)
    ```bash
-   TOKEN=Token
-   CLIENT_ID=
-
+   TOKEN="Token(mit ")"
+   CLIENT_ID="Client ID(mit ")"
 4. Bot starten:
    ```bash
    node index.js
