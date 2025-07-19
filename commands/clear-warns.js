@@ -1,5 +1,16 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { loadWarnData, saveWarnData } = require('./warn');
+const mysql = require('mysql2/promise');
+require('dotenv').config();
+
+const pool = mysql.createPool({
+    host: 'emskirchener-bus-betriebe.lima-db.de',
+    user: 'USER445815_bot',
+    password: process.env.DB_PASSWORD,
+    database: 'db_445815_2',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -9,53 +20,50 @@ module.exports = {
             option.setName('user')
                 .setDescription('Der User, dessen Warns gelöscht werden sollen')
                 .setRequired(true)),
-    
+
     execute: async (interaction) => {
-        await interaction.deferReply({ ephemeral: true });
-        
-        const user = interaction.options.getUser('user');
-        const guildId = interaction.guild.id;
-        const data = loadWarnData();
-        
-        if (!data[guildId] || !data[guildId][user.id]) {
-            await interaction.editReply({ content: `${user.tag} hat keine Warns zum Löschen.` });
-            return;
-        }
-        
-        const warnCount = data[guildId][user.id].length;
-        delete data[guildId][user.id];
-        
-        if (Object.keys(data[guildId]).length === 0) {
-            delete data[guildId];
-        }
-        
-        saveWarnData(data);
-        
-        const embed = new EmbedBuilder()
-            .setColor(0x00FF00)
-            .setTitle('✅ Warns gelöscht')
-            .setDescription(`Alle ${warnCount} Warns von ${user.tag} wurden entfernt.`)
-            .setFooter({ text: `Emskirchener Busbetriebe | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
-            .setTimestamp();
-        
-        await interaction.editReply({ embeds: [embed] });
-        
+        await interaction.deferReply({ flags: 64 });
+
         try {
-            const logChannel = await interaction.guild.channels.fetch('1395677255333707796');
-            const logEmbed = new EmbedBuilder()
-                .setColor(0xFFA500)
-                .setTitle('⚠️ Warns gelöscht')
-                .addFields(
-                    { name: 'User', value: `${user.tag}`, inline: false },
-                    { name: 'Moderator', value: `${interaction.user.tag}`, inline: false },
-                    { name: 'Gelöschte Warns', value: `${warnCount}`, inline: false }
-                )
-                .setFooter({ text: `Emskirchener Busbetriebe | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
-                .setTimestamp();
-            
-            await logChannel.send({ embeds: [logEmbed] });
+            const user = interaction.options.getUser('user');
+            const [result] = await pool.execute(
+                'DELETE FROM warns WHERE discordID = ?',
+                [user.id]
+            );
+
+            const embed = new EmbedBuilder()
+                .setColor(result.affectedRows > 0 ? 0x00FF00 : 0xFFA500)
+                .setTitle(result.affectedRows > 0 ? '✅ Warns gelöscht' : '⚠️ Keine Warns gefunden')
+                .setDescription(result.affectedRows > 0
+                    ? `Alle ${result.affectedRows} Warns von ${user.tag} wurden entfernt.`
+                    : `${user.tag} hatte keine Warns zum Löschen.`);
+
+            await interaction.editReply({ embeds: [embed] });
+
+            if (result.affectedRows > 0) {
+                try {
+                    const logChannel = await interaction.guild.channels.fetch('1395677255333707796');
+                    await logChannel.send({
+                        embeds: [
+                            new EmbedBuilder()
+                                .setColor(0xFFA500)
+                                .setTitle('⚠️ Warns gelöscht')
+                                .addFields(
+                                    { name: 'User', value: user.tag },
+                                    { name: 'Moderator', value: interaction.user.tag },
+                                    { name: 'Anzahl', value: result.affectedRows.toString() }
+                                )
+                        ]
+                    });
+                } catch (error) {
+                    console.error('Logging fehlgeschlagen:', error);
+                }
+            }
         } catch (error) {
-            console.error('Fehler beim Loggen:', error);
+            console.error('Datenbankfehler:', error);
+            await interaction.editReply({
+                content: 'Datenbankfehler. Bitte versuche es später erneut.'
+            });
         }
     }
 };

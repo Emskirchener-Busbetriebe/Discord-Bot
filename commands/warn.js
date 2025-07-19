@@ -1,47 +1,82 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
+const mysql = require('mysql2/promise');
+require('dotenv').config();
+
+function getCorrectBerlinTime() {
+    const now = new Date();
+    const berlinOffset = now.getTimezoneOffset() + (now.getHours() >= 3 ? 120 : 60);
+    return new Date(now.getTime() + berlinOffset * 60000);
+}
+
+const pool = mysql.createPool({
+    host: 'emskirchener-bus-betriebe.lima-db.de',
+    user: 'USER445815_bot',
+    password: process.env.DB_PASSWORD,
+    database: 'db_445815_2',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
 
 const WARN_CHANNEL_ID = '1395677255333707796';
-const WARN_DATA_PATH = path.join(__dirname, 'warnData.json');
 
-function ensureWarnDataFile() {
-    if (!fs.existsSync(WARN_DATA_PATH)) {
-        fs.writeFileSync(WARN_DATA_PATH, JSON.stringify({}, null, 2));
+async function addWarn(guildId, userId, username, reason, moderatorId, moderatorUsername) {
+    try {
+        const [warnCount] = await pool.execute(
+            'SELECT COUNT(*) as count FROM warns WHERE discordID = ?',
+            [userId]
+        );
+
+        const berlinNow = getCorrectBerlinTime();
+        const dateStr = berlinNow.toISOString().split('T')[0];
+        const timeStr = berlinNow.toTimeString().split(' ')[0].substring(0, 8);
+
+        await pool.execute(
+            'INSERT INTO warns (discordID, discordUsername, reason, moderatorID, moderatorUsername, date, time, warncount) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+                userId,
+                username,
+                reason,
+                moderatorId,
+                moderatorUsername,
+                dateStr,
+                timeStr,
+                warnCount[0].count + 1
+            ]
+        );
+
+        const formattedTime = berlinNow.toLocaleString('de-DE', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        }).replace(',', '');
+
+        return {
+            username,
+            reason,
+            timestamp: formattedTime + ' Uhr',
+            warnCount: warnCount[0].count + 1
+        };
+    } catch (error) {
+        console.error('Datenbankfehler:', error);
+        throw error;
     }
 }
 
-function loadWarnData() {
-    ensureWarnDataFile();
-    return JSON.parse(fs.readFileSync(WARN_DATA_PATH));
-}
-
-function saveWarnData(data) {
-    fs.writeFileSync(WARN_DATA_PATH, JSON.stringify(data, null, 2));
-}
-
-function addWarn(guildId, userId, username, reason) {
-    const data = loadWarnData();
-    const now = new Date();
-    
-    if (!data[guildId]) data[guildId] = {};
-    if (!data[guildId][userId]) data[guildId][userId] = [];
-    
-    const warn = {
-        username: username,
-        reason: reason,
-        timestamp: now.toLocaleString('de-DE', { timeZone: 'Europe/Berlin' }),
-        warnCount: data[guildId][userId].length + 1
-    };
-    
-    data[guildId][userId].push(warn);
-    saveWarnData(data);
-    return warn;
-}
-
-function getUserWarns(guildId, userId) {
-    const data = loadWarnData();
-    return data[guildId]?.[userId] || [];
+async function getUserWarns(userId) {
+    try {
+        const [warns] = await pool.execute(
+            'SELECT * FROM warns WHERE discordID = ? ORDER BY date DESC, time DESC',
+            [userId]
+        );
+        return warns;
+    } catch (error) {
+        console.error('Datenbankfehler:', error);
+        throw error;
+    }
 }
 
 module.exports = {
@@ -58,44 +93,55 @@ module.exports = {
                 .setRequired(true)),
 
     execute: async (interaction) => {
-        await interaction.deferReply();
-        
-        const user = interaction.options.getUser('user');
-        const reason = interaction.options.getString('reason');
-        const guildId = interaction.guild.id;
-        
-        const warn = addWarn(guildId, user.id, user.username, reason);
-        
-        const responseEmbed = new EmbedBuilder()
-            .setColor(0xFFA500)
-            .setTitle('⚠️ Warn erfolgreich')
-            .setDescription(`${user.tag} wurde verwarnt. (Warn #${warn.warnCount})`);
-
-        const logEmbed = new EmbedBuilder()
-            .setColor(0xFFA500)
-            .setTitle('⚠️ Neuer Warn')
-            .addFields(
-                { name: 'User', value: `${user} (${user.tag})`, inline: false },
-                { name: 'Moderator', value: `${interaction.user}`, inline: false },
-                { name: 'Warn #', value: `${warn.warnCount}`, inline: false },
-                { name: 'Grund', value: reason },
-                { name: 'Zeitpunkt', value: warn.timestamp }
-            )
-            .setFooter({ text: `Emskirchener Busbetriebe | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
-            .setTimestamp();
-        
         try {
-            const logChannel = await interaction.guild.channels.fetch(WARN_CHANNEL_ID);
-            await logChannel.send({ embeds: [logEmbed] });
+            await interaction.deferReply();
+
+            const user = interaction.options.getUser('user');
+            const reason = interaction.options.getString('reason');
+
+            const warn = await addWarn(
+                interaction.guild.id,
+                user.id,
+                user.username,
+                reason,
+                interaction.user.id,
+                interaction.user.username
+            );
+
+            const responseEmbed = new EmbedBuilder()
+                .setColor(0xFFA500)
+                .setDescription(`✅ ${user.toString()} wurde mit dem Grund **${reason}** verwarnt. (Warn #${warn.warnCount})`)
+                .setFooter({
+                    text: `Emskirchener Busbetriebe | Warnsystem`,
+                    iconURL: interaction.client.user.displayAvatarURL()
+                })
+                .setTimestamp();
+
+            const logEmbed = new EmbedBuilder()
+                .setColor(0xFFA500)
+                .setTitle('⚠️ Neuer Warn')
+                .addFields(
+                    { name: 'User', value: `${user} (${user.tag})`, inline: false },
+                    { name: 'Moderator', value: `${interaction.user}`, inline: false },
+                    { name: 'Warn #', value: `${warn.warnCount}`, inline: false },
+                    { name: 'Grund', value: reason },
+                    { name: 'Zeitpunkt', value: warn.timestamp }
+                )
+                .setFooter({ text: `Emskirchener Busbetriebe | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
+                .setTimestamp();
+
+            try {
+                const logChannel = await interaction.guild.channels.fetch(WARN_CHANNEL_ID);
+                await logChannel.send({ embeds: [logEmbed] });
+            } catch (error) {
+                console.error('Fehler beim Loggen:', error);
+            }
+
+            await interaction.editReply({ embeds: [responseEmbed] });
         } catch (error) {
-            console.error('Fehler beim Loggen:', error);
+            console.error('Fehler:', error);
+            await interaction.editReply({ content: 'Ein Fehler ist aufgetreten. Bitte versuche es später erneut.' });
         }
-        
-        await interaction.editReply({ embeds: [responseEmbed] });
     },
-    loadWarnData,
-    saveWarnData,
     getUserWarns
 };
-
-ensureWarnDataFile();

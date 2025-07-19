@@ -9,32 +9,78 @@ module.exports = {
             option.setName('user')
                 .setDescription('Der User, dessen Warns angezeigt werden sollen')
                 .setRequired(true)),
-    
+
     execute: async (interaction) => {
         await interaction.deferReply();
-        
-        const user = interaction.options.getUser('user');
-        const guildId = interaction.guild.id;
-        const warns = getUserWarns(guildId, user.id);
-        
-        if (warns.length === 0) {
-            await interaction.editReply({ content: `${user.tag} hat keine Warns.` });
-            return;
-        }
-        
-        const embed = new EmbedBuilder()
-            .setColor(0xFFA500)
-            .setTitle(`⚠️ Warns für ${user.tag}`)
-            .setFooter({ text: `Insgesamt ${warns.length} Warn(s)`, iconURL: user.displayAvatarURL() });
-        
-        warns.forEach((warn, index) => {
-            embed.addFields({
-                name: `Warn #${index + 1}`,
-                value: `**Grund:** ${warn.reason}\n**Datum:** ${warn.timestamp}`,
-                inline: false
+
+        try {
+            const user = interaction.options.getUser('user');
+            let warns = await getUserWarns(user.id);
+
+            if (warns.length === 0) {
+                await interaction.editReply({ content: `${user.tag} hat keine Warns.` });
+                return;
+            }
+
+            warns = warns.sort((a, b) => a.warncount - b.warncount);
+
+            const embed = new EmbedBuilder()
+                .setColor(0xFFA500)
+                .setTitle(`⚠️ Warns für ${user.tag}`)
+                .setDescription(`**Insgesamt:** ${warns.length} Warn(s)`);
+
+            warns.forEach(warn => {
+                let datePart, timePart;
+
+                if (warn.timestamp) {
+                    const dateObj = new Date(warn.timestamp);
+                    datePart = dateObj.toISOString().split('T')[0];
+                    timePart = dateObj.toTimeString().substring(0, 8);
+                } else {
+                    datePart = warn.date instanceof Date ? warn.date.toISOString().split('T')[0] : warn.date;
+                    timePart = warn.time || '00:00:00';
+                }
+
+                const [year, month, day] = datePart.split('-');
+                const [hours, minutes] = timePart.split(':');
+
+                const warnDate = new Date(
+                    parseInt(year),
+                    parseInt(month) - 1,
+                    parseInt(day),
+                    parseInt(hours),
+                    parseInt(minutes)
+                );
+
+                const formattedDate = warnDate.toLocaleString('de-DE', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }).replace(',', '');
+
+                embed.addFields({
+                    name: `Warn #${warn.warncount}`,
+                    value: `**Grund:** ${warn.reason}\n**Datum:** ${formattedDate} Uhr`,
+                    inline: false
+                });
             });
-        });
-        
-        await interaction.editReply({ embeds: [embed] });
+
+            embed.setFooter({
+                text: `Emskirchener Busbetriebe | Bot`,
+                iconURL: interaction.client.user.displayAvatarURL()
+            })
+            .setTimestamp();
+
+            await interaction.editReply({ embeds: [embed] });
+
+        } catch (error) {
+            await interaction.editReply({
+                content: 'Fehler beim Abrufen der Warns. Bitte versuche es später erneut.'
+            });
+            console.error('Fehler in warnings:', error);
+        }
     }
 };
