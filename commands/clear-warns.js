@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const mysql = require('mysql2/promise');
+const config = require('../config/config.json');
 require('dotenv').config();
 
 const pool = mysql.createPool({
@@ -22,6 +23,20 @@ module.exports = {
                 .setRequired(true)),
 
     execute: async (interaction) => {
+        if (!interaction.inGuild()) {
+            return await interaction.reply({
+                content: '❌ Dieser Befehl kann nur auf einem Server verwendet werden!',
+                ephemeral: true
+            });
+        }
+
+        if (interaction.guildId !== config.mainGuild) {
+            return await interaction.reply({
+                content: '❌ Dieser Befehl kann nur im Haupt-Server verwendet werden!',
+                ephemeral: true
+            });
+        }
+
         await interaction.deferReply({ flags: 64 });
 
         try {

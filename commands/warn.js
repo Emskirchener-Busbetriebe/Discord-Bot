@@ -108,6 +108,16 @@ module.exports = {
                 interaction.user.username
             );
 
+            try {
+                const dmEmbed = new EmbedBuilder()
+                    .setColor(0xFFA500)
+                    .setDescription(`Du wurdest auf dem Emskirchener Busbetriebe Discord Server für den Grund **${reason}** gewarnt.`);
+
+                await user.send({ embeds: [dmEmbed] });
+            } catch (dmError) {
+                console.error('Konnte DM nicht senden:', dmError);
+            }
+
             const responseEmbed = new EmbedBuilder()
                 .setColor(0xFFA500)
                 .setDescription(`✅ ${user.toString()} wurde mit dem Grund **${reason}** verwarnt. (Warn #${warn.warnCount})`)
