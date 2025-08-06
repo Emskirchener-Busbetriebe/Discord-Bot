@@ -59,6 +59,8 @@ Der offizielle Discord-Bot für den Emskirchener-Busbetriebe Discord-Server.
    ```bash
    npm install
    npm install axios
+   npm install canvas @napi-rs/canvas
+   npm install mysql2
 
 3. Erstelle eine .env-Datei im Hauptverzeichnis und füge den Bot-Token und die ClientID ein. (Frage Leon nach den Daten.)
    ```bash
