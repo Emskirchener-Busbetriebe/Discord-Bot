@@ -9,7 +9,9 @@
   "author": "Leon.H43",
   "license": "MIT",
   "dependencies": {
+    "@napi-rs/canvas": "^0.1.76",
     "axios": "^1.7.9",
+    "canvas": "^3.1.2",
     "discord.js": "^14.0.0",
     "dotenv": "^16.0.0",
     "mysql2": "^3.14.2",

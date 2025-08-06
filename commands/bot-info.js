@@ -12,7 +12,7 @@ module.exports = {
                 { name: '👨‍💻 Developer', value: '**Developer:** Leon.H43 aka. Gamer443, Nightnice3000 aka. Ole' },
                 { name: '🔢 Version', value: '**Version:** Beta 1.2.2 🔥' },
             )
-            .setColor('#00ff00')
+            .setColor(0x0099FF)
             .setFooter({ text: `Emskirchener Busbetriebe | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
             .setTimestamp();
 

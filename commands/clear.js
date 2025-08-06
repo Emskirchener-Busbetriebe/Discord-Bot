@@ -76,7 +76,7 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setTitle('Nachrichten gelöscht')
             .setDescription(`${deletedMessages} Nachrichten wurden erfolgreich gelöscht.`)
-            .setColor('Green')
+            .setColor(0xFFA500)
             .setFooter({ text: `Emskirchener Busbetriebe | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
             .setTimestamp();
 

@@ -19,7 +19,7 @@ module.exports = {
                 { name: '/shift join', value: 'Tritt einer Schicht bei und wähle Bus und Linie aus.' },
                 { name: '/shift leave', value: 'Verlasse eine Schicht anhand von Datum und Uhrzeit.' }
             )
-            .setColor('#00ff00')
+            .setColor(0x0099FF)
             .setFooter({ text: `Emskirchener Busbetriebe | Bot`, iconURL: interaction.client.user.displayAvatarURL() })
             .setTimestamp();
 

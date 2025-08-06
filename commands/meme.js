@@ -12,7 +12,7 @@ module.exports = {
             const meme = response.data;
 
             const embed = new EmbedBuilder()
-                .setColor(0x00FF00)
+                .setColor(0x0099FF)
                 .setTitle(meme.title)
                 .setImage(meme.url)
                 .setFooter({ text: `Emskirchener Busbetriebe | Bot`, iconURL: interaction.client.user.displayAvatarURL() })

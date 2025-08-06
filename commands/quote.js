@@ -11,13 +11,11 @@ module.exports = {
             const quote = response.data[0].q;
             const author = response.data[0].a;
 
-            const randomColor = Math.floor(Math.random() * 16777215).toString(16);
-
             const embed = new EmbedBuilder()
                 .setTitle('Dein Zitat')
                 .setDescription(`*${quote}*`)
                 .setFooter({ text: `~ ${author}` })
-                .setColor(`#${randomColor}`);
+                .setColor(0x0099FF)
 
             await interaction.reply({ embeds: [embed] });
         } catch (error) {
