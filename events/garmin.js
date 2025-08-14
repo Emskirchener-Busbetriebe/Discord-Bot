@@ -6,7 +6,15 @@ module.exports = {
     async execute(message) {
         if (message.author.bot || !message.reference) return;
 
-        if (message.content.toLowerCase().includes('ok garmin, video speichern')) {
+        const triggers = [
+            'ok garmin, video speichern',
+            'okay garmin, video speichern'
+        ];
+        
+        const messageContent = message.content.toLowerCase();
+        const isTrigger = triggers.some(trigger => messageContent.includes(trigger));
+
+        if (isTrigger) {
             try {
                 // Nachricht und Autor holen
                 const repliedMessage = await message.channel.messages.fetch(message.reference.messageId);
