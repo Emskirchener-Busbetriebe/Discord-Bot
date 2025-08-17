@@ -36,8 +36,7 @@ module.exports = {
         try {
             const dmEmbed = new EmbedBuilder()
                 .setColor(0x0099FF)
-                .setDescription(`Nachricht vom Emskirchener Busbetriebe Discord Team:\n\n${message}`)
-                .setTimestamp();
+                .setDescription(`Nachricht vom Emskirchener Busbetriebe Discord Team: ${message}`)
 
             const button = new ButtonBuilder()
                 .setCustomId('disabled')
