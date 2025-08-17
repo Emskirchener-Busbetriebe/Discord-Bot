@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ActionRowBuilder } = require('discord.js');
+const config = require('../config/config.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -18,6 +19,14 @@ module.exports = {
                 .setRequired(true)),
 
     async execute(interaction) {
+        if (!interaction.inGuild()) {
+            return interaction.reply({ content: '❌ Dieser Befehl kann nur auf einem Server verwendet werden!', ephemeral: true });
+        }
+
+        if (interaction.guildId !== config.mainGuild) {
+            return interaction.reply({ content: '❌ Dieser Befehl kann nur auf dem Hauptserver verwendet werden!', ephemeral: true });
+        }
+
         await interaction.deferReply({ ephemeral: true });
 
         const user = interaction.options.getUser('user');
@@ -27,7 +36,8 @@ module.exports = {
         try {
             const dmEmbed = new EmbedBuilder()
                 .setColor(0x0099FF)
-                .setDescription(`Nachricht vom Emskirchener Busbetriebe Discord Team: ${message}`)
+                .setDescription(`Nachricht vom Emskirchener Busbetriebe Discord Team:\n\n${message}`)
+                .setTimestamp();
 
             const button = new ButtonBuilder()
                 .setCustomId('disabled')
@@ -55,17 +65,7 @@ module.exports = {
             await interaction.editReply({ embeds: [responseEmbed] });
         } catch (error) {
             console.error('Fehler beim Senden der DM:', error);
-
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setDescription(`⛔ Die Nachricht konnte nicht an ${user.toString()} gesendet werden. Der User hat möglicherweise DMs deaktiviert.`)
-                .setFooter({
-                    text: 'Emskirchener Busbetriebe | Bot',
-                    iconURL: interaction.client.user.displayAvatarURL()
-                })
-                .setTimestamp();
-
-            await interaction.editReply({ embeds: [errorEmbed] });
+            await interaction.editReply({ content: `⛔ Die Nachricht konnte nicht an ${user.toString()} gesendet werden. Der User hat möglicherweise DMs deaktiviert.`, ephemeral: true });
         }
     }
 };
